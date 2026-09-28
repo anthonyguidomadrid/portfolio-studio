@@ -1,0 +1,7 @@
+.env
+.env.*
+.git
+.DS_Store
+**/database/
+**/backups/
+**/uploads/
