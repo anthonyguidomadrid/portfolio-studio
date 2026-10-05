@@ -39,10 +39,13 @@ The design tokens and base styles are in `apps/web/app/globals.css`; the font is
 Run from the repository root:
 
 ```sh
+npm --prefix apps/web run test
 npm --prefix apps/web run typecheck
 npm --prefix apps/web run lint
 npm --prefix apps/web run build
 ```
+
+The Vitest unit tests cover WordPress settings normalization and CMS-unavailable fallbacks. The Home integration test renders the actual server page using a mocked public WordPress settings response; it requires no running CMS or browser.
 
 ## Deployment Notes
 
