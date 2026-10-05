@@ -1,8 +1,12 @@
 FROM wordpress:php8.3-apache
 
-RUN a2dismod mpm_event || true; \
+RUN set -eux; \
+	a2dismod mpm_event || true; \
 	a2dismod mpm_worker || true; \
-	a2enmod mpm_prefork
+	rm -f /etc/apache2/mods-enabled/mpm_event.* /etc/apache2/mods-enabled/mpm_worker.*; \
+	a2enmod mpm_prefork; \
+	apache2ctl -M | grep -q 'mpm_prefork_module'; \
+	! apache2ctl -M | grep -Eq 'mpm_(event|worker)_module'
 
 COPY plugins/portfolio-studio/ /var/www/html/wp-content/plugins/portfolio-studio/
 
