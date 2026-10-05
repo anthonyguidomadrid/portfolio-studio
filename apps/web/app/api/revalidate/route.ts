@@ -41,36 +41,13 @@ export async function POST(request: Request) {
     );
   }
 
-  const event = payload as { type?: unknown; slug?: unknown };
-  const slug = typeof event.slug === "string" ? event.slug : "";
-
-  if (event.type === "portfolio_item" && /^[a-z0-9][a-z0-9-]*$/.test(slug)) {
-    revalidateTag("portfolio", "max");
-    revalidateTag("portfolio-tags", "max");
-    revalidateTag("portfolio-media", "max");
-    revalidatePath("/");
-    revalidatePath("/portfolio");
-    revalidatePath(`/portfolio/${slug}`);
-    revalidatePath("/sitemap.xml");
-    return NextResponse.json({
-      revalidated: true,
-      paths: ["/", "/portfolio", `/portfolio/${slug}`, "/sitemap.xml"],
-    });
-  }
-
-  if (event.type === "page" && ["about", "contact"].includes(slug)) {
-    revalidateTag(`page-${slug}`, "max");
-    revalidatePath(`/${slug}`);
-    return NextResponse.json({ revalidated: true, paths: [`/${slug}`] });
-  }
-
+  const event = payload as { type?: unknown };
   if (event.type === "site_settings") {
     revalidateTag("site-settings", "max");
     revalidatePath("/");
-    revalidatePath("/contact");
     return NextResponse.json({
       revalidated: true,
-      paths: ["/", "/contact"],
+      paths: ["/"],
     });
   }
 

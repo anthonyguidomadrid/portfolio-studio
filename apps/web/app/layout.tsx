@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
-import "@fontsource-variable/montserrat";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
-import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
 import { absoluteUrl, getSiteConfig } from "@/lib/site-config";
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-montserrat",
+  display: "swap",
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   const siteConfig = await getSiteConfig();
@@ -32,22 +35,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return renderLayout(children);
-}
-
-async function renderLayout(children: React.ReactNode) {
-  const locale = await getLocale();
-  const messages = await getMessages();
-  const siteConfig = await getSiteConfig();
-
   return (
-    <html lang={locale} data-scroll-behavior="smooth">
-      <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <SiteHeader siteConfig={siteConfig} />
-          {children}
-          <SiteFooter siteConfig={siteConfig} />
-        </NextIntlClientProvider>
+    <html
+      lang="en"
+      className={montserrat.variable}
+      data-scroll-behavior="smooth"
+    >
+      <body className="min-h-screen bg-background font-sans text-body text-foreground antialiased">
+        {children}
       </body>
     </html>
   );

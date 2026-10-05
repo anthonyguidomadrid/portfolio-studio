@@ -2,54 +2,35 @@
 
 ## System overview
 
-The repository contains a single Git project with two independently deployed applications:
+This single repository contains a small public Next.js app and a self-hosted WordPress CMS:
 
-- `apps/web`: public Next.js App Router application, TypeScript, Tailwind CSS v4, and `next-intl`. Intended for Vercel.
-- `apps/wordpress`: a Docker build context containing the upstream WordPress image recipe and the version-controlled `portfolio-studio` custom plugin. Intended for Railway.
-- Railway MySQL stores WordPress content and configuration. A Railway persistent volume stores WordPress uploads. Database contents, uploads, WordPress core, and credentials are runtime/deployment data, not Git content.
+- `apps/web`: Next.js App Router, TypeScript, Tailwind CSS v4. Intended for Vercel.
+- `apps/wordpress`: custom plugin and Docker build context. WordPress core, database contents, uploads, and credentials remain runtime/deployment data. Intended for Railway.
+- Railway MySQL stores WordPress configuration/content. A persistent volume stores WordPress uploads.
 
-The public routes are `/`, `/about`, `/portfolio`, `/portfolio/[slug]`, and `/contact`, with a custom not-found page. The videobook is a portfolio item, conventionally slugged `videobook` and tagged `Video`, not a separate top-level route.
+The only public application page is `/`. It displays a Coming Soon message and the site name fetched from WordPress. `/robots.txt`, `/sitemap.xml`, and `/api/revalidate` are technical endpoints, not public content pages.
 
-## Frontend
+## Frontend and theme
 
-- App Router entrypoints are under `apps/web/app`.
-- Shared navigation, cards, tag filter, image gallery, video embed, and locale selector are under `apps/web/components`.
-- Tailwind v4 uses `apps/web/postcss.config.mjs`; design tokens and Tailwind layers are in `apps/web/app/globals.css`.
-- `apps/web/messages/en.json` and `es.json` own translated interface labels. The selected locale is stored in the `NEXT_LOCALE` cookie; current routes remain unprefixed.
-- `apps/web/lib/cms.ts` reads and validates public WordPress REST data. `apps/web/lib/site-config.ts` reads WordPress site settings and supplies generic preview fallback values only when CMS settings are unavailable.
-- CMS fetches are server-side and cached with Next.js tags/time windows. WordPress admin credentials are not required or exposed to the frontend.
+- `apps/web/app/page.tsx` is the single public page. It calls `getSiteConfig()` on the server.
+- `apps/web/lib/site-config.ts` fetches `/wp-json/portfolio-studio/v1/settings`, validates the public settings response, and uses a generic preview name when the CMS is unavailable.
+- `apps/web/app/layout.tsx` loads Montserrat with `next/font/google` and provides global semantic foreground/background utilities.
+- `apps/web/app/globals.css` is the Tailwind v4 CSS-first theme. Semantic colors, typography, widths, gutters, spacing, focus, and radii are declared in `@theme`; there is no conflicting `tailwind.config`.
+- `apps/web/components/theme-preview.tsx` is rendered only in development. Theme token usage is documented in `apps/web/THEME.md`.
 
-## CMS content model and API boundary
+All CMS requests run on the server. WordPress admin credentials are not required by the public app or exposed to browsers.
 
-The custom plugin registers:
+## WordPress API boundary
 
-- `portfolio_item` at `/wp-json/wp/v2/portfolio_item`.
-- `portfolio_tag` at `/wp-json/wp/v2/portfolio_tag`.
-- Portfolio metadata: `portfolio_cover_image_id` (attachment ID), `portfolio_gallery_image_ids` (attachment ID array), `portfolio_video_url` (URL), `portfolio_credits` (text), and `portfolio_display_order` (integer).
-- Standard WordPress Pages with `about` and `contact` slugs for editable copy.
-- Public site settings at `/wp-json/portfolio-studio/v1/settings`: `name`, `description`, `contactEmail`, and `socialLinks` (`label`/`href`). Only explicitly public values are returned.
+The custom plugin exposes public site settings at `/wp-json/portfolio-studio/v1/settings`: `name`, `description`, `contactEmail`, and `socialLinks` (`label`/`href`). The frontend currently consumes `name` for the Coming Soon page and the settings values for metadata. Only public values are returned. Settings are edited in WordPress **Settings → Portfolio site**.
 
-The standard WordPress REST API is the content contract. Public frontend reads published content without an admin credential. CMS-authored copy and WordPress media alt text remain owned in WordPress. UI labels are translated in the frontend message catalogs. Brand name, description, contact address, and social links are configured in WordPress Settings → Portfolio site.
+The plugin also contains the portfolio post type, tag taxonomy, media fields, and page publishing hooks for later use, but no portfolio/About/Contact frontend routes currently consume those features. Add such routes only when scope explicitly expands.
 
-## Environments and deployment
+## Environments and publishing
 
-- Local: `docker compose` runs WordPress and MariaDB with named database, WordPress, and uploads volumes. The frontend is started with `npm --prefix apps/web run dev`.
-- Vercel: repository root directory is `apps/web`. `CMS_URL` points to the public WordPress origin, `NEXT_PUBLIC_SITE_URL` is the canonical frontend origin, and `REVALIDATION_SECRET` is a private shared webhook value.
-- Railway: build the WordPress image from `apps/wordpress`, attach Railway MySQL through private service variables, and mount persistent storage specifically at `/var/www/html/wp-content/uploads`.
-- The root README documents environment variables, setup, DNS, backups, and platform settings. No production domains, accounts, or secrets are committed here.
+- Local: `docker compose` runs WordPress and MariaDB with named data volumes; run the web app with `npm --prefix apps/web run dev`.
+- Vercel: project root is `apps/web`. Set `CMS_URL`, `NEXT_PUBLIC_SITE_URL`, and `REVALIDATION_SECRET` as documented in the root README and example env files.
+- Railway: build WordPress from `apps/wordpress`, connect MySQL privately, and mount persistent storage at `/var/www/html/wp-content/uploads`.
+- When the WordPress site settings change, the plugin sends a signed POST to `/api/revalidate`. The endpoint validates the shared secret, expires the site-settings cache, and revalidates Home. If WordPress is unavailable, the server uses the generic preview name.
 
-## Publishing and revalidation flow
-
-1. An editor publishes or updates a portfolio item or the About/Contact pages in WordPress. Site branding changes are saved under Settings → Portfolio site.
-2. The plugin sends a non-blocking POST to the frontend `/api/revalidate` endpoint using `Authorization: Bearer <REVALIDATION_SECRET>`.
-3. The frontend compares the secret in constant time, validates the event type and slug, expires the associated cache tags, and invalidates affected routes.
-4. On the next request, the Next.js server fetches fresh public REST content. If WordPress is unavailable, isolated preview data/config is used and logged; no admin credential is exposed.
-
-Portfolio events refresh Home, Portfolio, the affected detail route, and sitemap. About/Contact events refresh their page. Site-settings events refresh tagged settings and the routes that display brand values.
-
-## Operational constraints
-
-- Never commit WordPress core, SQL/database contents, uploads, secrets, or generated builds.
-- Keep WP and Vercel secrets in service environment variables; use the same webhook secret on both services.
-- Back up the database and uploads volume independently and test restoring them together.
-- No visitor auth, ecommerce, blog, newsletter, analytics, autonomous daemon, or external orchestration is part of this foundation.
+Never commit WordPress core, SQL/database contents, uploads, secrets, or generated build output. Do not deploy or change production domains/secrets without explicit human action. Back up the database and uploads separately and test restoring them together.
