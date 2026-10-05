@@ -1,84 +1,55 @@
-# Initial Backlog
+# Current Backlog
 
-Order is dependency-aware. Parallel notes identify tasks that may proceed simultaneously only after their shared prerequisites are met. Create a separate issue and branch/PR for each item.
+This list describes the current minimal product baseline, not the earlier broader portfolio specification. The app presently has one public Home page that reads WordPress site settings. Do not add portfolio, About, Contact, localization, or other routes unless the user explicitly expands scope. The coordinator must inspect code and tests before opening an issue; close or narrow a task if its criteria already pass.
 
-The repository already contains the Next.js routes, CMS client, custom plugin/content model, filtering, settings endpoint, and revalidation path described below. Treat these as proposed audit/contract-hardening issues first: inspect the current implementation and close an item without code changes if its acceptance criteria already pass. Do not rebuild existing functionality just to follow this list.
+One item equals one issue, branch, and PR. Only work on items with an owner, dependencies, acceptance criteria, and verification plan.
 
-## B01 — Repository foundation and checks
+## B01 — Keep CI and tests reproducible
 
-**Owner:** Coordinator / repository maintainer  
-**Goal:** Verify the current repository baseline and keep instructions, package checks, ignore rules, and CI aligned with it.  
-**Scope:** Audit root/app ignore rules and env examples; verify CI runs frontend typecheck, lint, and build without CMS credentials.  
-**Acceptance criteria:** Architecture and commands match the repository; CI runs the three app checks for pull requests; no WordPress runtime data or secrets are tracked.  
-**Verification:** `npm --prefix apps/web run typecheck`; `npm --prefix apps/web run lint`; `npm --prefix apps/web run build`; inspect `git status --short`.  
+**Status:** Existing baseline; audit only for demonstrated gaps.
+**Owner:** Frontend agent
+**Scope:** Check npm 10 `npm ci`, Vitest, typecheck, lint, and production build in GitHub Actions. Preserve the Node engine and lockfile compatibility.
+**Acceptance criteria:** CI runs `npm ci`, `npm test`, `npm run typecheck`, `npm run lint`, and `npm run build`; the same sequence succeeds from a clean install; no CMS credentials are required.
+**Verification:** Execute the listed commands with the CI Node/npm versions.
 **Dependencies:** None.
 
-## B02 — Agree and verify WordPress content contract
+## B02 — Verify the WordPress settings contract
 
-**Owner:** WordPress agent  
-**Goal:** Audit and adopt the existing custom plugin/API as the agreed stable public REST contract.  
-**Scope:** Verify post type, taxonomy, metadata types, media IDs, About/Contact slugs, public settings response, permissions, and publishing event payloads against the current plugin.  
-**Acceptance criteria:** `docs/architecture.md` or a linked contract gives exact paths/fields; public GETs expose only published content and intended settings; writable fields are capability-protected and sanitized; representative responses match the frontend client's expectations.  
-**Verification:** PHP syntax/runtime or Docker-based REST checks where available; otherwise identify checks unavailable and attach inspected payload/schema evidence.  
-**Dependencies:** B01.  
-**Parallel:** B04 can start after B01 because the shared frontend shell does not depend on CMS field details.
+**Status:** Endpoint and frontend client exist; verify end to end when WordPress runtime is available.
+**Owner:** WordPress agent, with frontend contract review
+**Scope:** Confirm `/wp-json/portfolio-studio/v1/settings` exposes `name`, `description`, `contactEmail`, and `socialLinks` only, and that WordPress Settings → Portfolio site updates those values.
+**Acceptance criteria:** An activated local plugin returns the documented public response; invalid social URLs are discarded; no private setting or credential is exposed; `getSiteConfig()` accepts the response and falls back safely when CMS is unavailable.
+**Verification:** REST request against a local WordPress instance plus `npm --prefix apps/web run test`. If PHP/Docker are unavailable, report this as an unverified integration rather than claiming success.
+**Dependencies:** B01.
 
-## B03 — Typed frontend CMS client
+## B03 — Exercise site-settings publishing revalidation
 
-**Owner:** Frontend agent  
-**Goal:** Audit and close contract gaps in the existing typed CMS and site-config clients.  
-**Acceptance criteria:** Requests are server-side; published content needs no admin credential; malformed/missing fields are safely handled; CMS outages do not break build/preview; settings fields and image host behavior match the agreed contract. Implement only demonstrated gaps.  
-**Verification:** Typecheck, lint, build without CMS env; fixture/manual integration check with a local WordPress instance when available.  
-**Dependencies:** B02.  
-**Parallel:** Can run with B04 after B02 is accepted, with disjoint files.
+**Status:** Sender and receiver exist; end-to-end delivery needs runtime verification.
+**Owner:** WordPress and frontend agents, sequenced by the existing event contract
+**Scope:** Verify that saving WordPress site settings sends the signed `site_settings` event and that the frontend revalidates the Home route and cached settings.
+**Acceptance criteria:** Missing/wrong secrets are rejected; the valid event expires `site-settings` and refreshes `/`; a settings change appears on a subsequent Home request; failure behavior is documented.
+**Verification:** Unit or route test for authorization/event handling plus a local WordPress-to-Next smoke test where runtime services are available.
+**Dependencies:** B02.
+**Parallel:** Sender/receiver test work may be separate only if file ownership does not overlap; coordinate contract or shared test files first.
 
-## B04 — Shared layout and design foundation
+## B04 — Deployment readiness and backup verification
 
-**Owner:** Frontend agent  
-**Goal:** Audit the existing shared layout and verify its reuse and branding boundaries.  
-**Acceptance criteria:** Home/About/Portfolio/Contact navigation works; Tailwind tokens preserve the monochrome/Montserrat/editorial direction; layout works on mobile and desktop; UI labels come from locale messages; no portfolio-specific identity is baked into shared components. Implement only demonstrated gaps.  
-**Verification:** Typecheck, lint, build; manual keyboard and narrow viewport checks.  
-**Dependencies:** B01.  
-**Parallel:** May proceed alongside B02 and then B03 if agents own distinct files.
+**Status:** Deployment instructions exist; no deployment is implied.
+**Owner:** Repository maintainer with frontend/WordPress review
+**Scope:** Review Railway MySQL and uploads persistence, Vercel root directory `apps/web`, required env names, canonical URLs, DNS instructions, and recovery steps.
+**Acceptance criteria:** Docs match current app behavior and CMS contract; staging values are configured by a human; database and upload backups are tested together; no production domains, secrets, or deploy changes are performed by agents.
+**Verification:** Staging smoke checks and a documented restore test; CI checks from B01.
+**Dependencies:** B01–B03.
 
-## B05 — CMS-backed Home, About, and Contact
+## B05 — Decide future public product scope
 
-**Owner:** Frontend agent  
-**Goal:** Verify existing Home/About/Contact pages use editable CMS content and reusable site configuration correctly.  
-**Acceptance criteria:** Home prominently shows the videobook item where available; About/Contact use WordPress Pages; settings come from WordPress with isolated preview fallback; metadata/canonical paths and missing-CMS states are correct. Implement only demonstrated gaps.  
-**Verification:** Typecheck, lint, build; verify preview fallback and local CMS response.  
-**Dependencies:** B03, B04.
+**Status:** Decision gate, not an implementation issue.
+**Owner:** Product owner
+**Scope:** Decide whether to add portfolio listing/detail routes, tags/video filtering, About, Contact, localization, or other public features.
+**Acceptance criteria:** The product owner names the desired routes/content and priorities. Only then should the coordinator create feature issues and identify CMS contract dependencies.
+**Verification:** Written scope decision and a coordinator-produced dependency plan.
+**Dependencies:** None; do not start implementation before approval.
 
-## B06 — Portfolio listing and tag filtering
+## Parallelism and ownership
 
-**Owner:** Frontend agent  
-**Goal:** Verify and harden the existing portfolio listing and tag filter against the CMS taxonomy.  
-**Acceptance criteria:** All-items and tag filters work by keyboard; empty result state is clear; cards link to detail routes; Video works as a tag; videobook stays an item rather than a top-level route. Implement only demonstrated gaps.  
-**Verification:** Typecheck, lint, build; manual filter checks for Video, another tag, and no-match state.  
-**Dependencies:** B03, B04.
-
-## B07 — Portfolio item route and media presentation
-
-**Owner:** Frontend agent  
-**Goal:** Verify the existing detail route, gallery, video, credits, and not-found behavior against the CMS contract.  
-**Acceptance criteria:** Image alternatives come from CMS media/copy; gallery controls are keyboard-accessible; video URLs are safely embedded or linked; optional fields fail gracefully; no invented credits appear. Implement only demonstrated gaps.  
-**Verification:** Typecheck, lint, build; test one item with gallery/video and one with missing optional fields.  
-**Dependencies:** B03, B04, B06.
-
-## B08 — Publishing and cache revalidation
-
-**Owner:** WordPress + Frontend agents, sequenced contract then integration  
-**Goal:** Verify the existing signed publishing hooks and revalidation endpoint refresh the correct public routes.  
-**Acceptance criteria:** WordPress sends signed events; frontend checks the shared secret safely, validates event type/slug, expires relevant tagged data and paths, and rejects malformed/unauthorized requests. Failure to deliver the webhook is documented and recoverable.  
-**Verification:** Typecheck, lint, build; local authorized/unauthorized POST checks; WordPress publish/update check if runtime is available.  
-**Dependencies:** B02, B03, B05, B06.  
-**Parallel:** WordPress sender and frontend receiver may be implemented concurrently only after the payload contract is accepted and file ownership is disjoint.
-
-## B09 — Deployment and launch checks
-
-**Owner:** Repository maintainer with frontend/WordPress review  
-**Goal:** Verify local-to-Railway/Vercel configuration without an agent deploying production.  
-**Acceptance criteria:** Railway DB/uploads persistence, Vercel `apps/web` root, env variable names, media hostname, canonical URL, DNS checklist, backups, and restore procedure are documented; secrets remain outside Git; preview/prod CMS URLs are intentionally configured.  
-**Verification:** CI checks; staging smoke checks and documented backup/restore test. Production deployment, DNS edits, and secret changes require explicit human action.  
-**Dependencies:** B01–B08.  
-**Parallel:** Documentation review can happen alongside staging preparation, but launch sign-off depends on all prior acceptance criteria.
+B02 contract/runtime verification and B01 CI audit can happen in parallel if they touch disjoint files. B03 depends on B02's verified event contract. B04 depends on CI and CMS checks. B05 is a product decision and may happen at any time, but implementation it authorizes is separately scoped. Never have two agents edit the same file concurrently.
