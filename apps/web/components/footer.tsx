@@ -1,4 +1,5 @@
 import {
+  FaEnvelope,
   FaFacebookF,
   FaFlickr,
   FaInstagram,
@@ -32,24 +33,33 @@ export function SiteFooter({
   return (
     <footer className="mt-auto border-t border-border bg-background">
       <div className="mx-auto flex w-full max-w-content flex-col items-center gap-5 px-page-gutter py-6 sm:flex-row sm:justify-between sm:gap-6">
-        <div className="flex min-w-0 flex-col items-center gap-4 sm:flex-row sm:gap-6">
+        <div className="flex w-full min-w-0 flex-row items-center justify-center gap-1 sm:w-auto sm:gap-4">
           {contactEmail && (
             <a
-              className="flex min-h-11 items-center text-small text-foreground no-underline decoration-border underline-offset-4 transition-colors hover:underline hover:decoration-foreground motion-reduce:transition-none"
+              aria-label={`${messages.footer.emailLinkLabel} ${contactEmail}`}
+              className="flex h-11 w-8 shrink-0 items-center justify-center text-foreground transition-colors hover:text-muted-foreground motion-reduce:transition-none sm:size-11"
               href={`mailto:${contactEmail}`}
+              title={messages.footer.emailLinkLabel}
             >
-              {contactEmail}
+              <FaEnvelope aria-hidden="true" focusable="false" size={19} />
             </a>
+          )}
+
+          {contactEmail && availableSocials.length > 0 && (
+            <span
+              aria-hidden="true"
+              className="hidden bg-border sm:block sm:h-6 sm:w-px"
+            />
           )}
 
           {availableSocials.length > 0 && (
             <nav aria-label={messages.footer.socialMediaLabel}>
-              <ul className="m-0 flex flex-wrap items-center justify-center gap-1 p-0">
+              <ul className="m-0 flex flex-nowrap items-center justify-center gap-0 p-0 sm:gap-1">
                 {availableSocials.map(({ key, label, Icon }) => (
                   <li className="list-none" key={key}>
                     <a
                       aria-label={label}
-                      className="flex size-11 items-center justify-center text-foreground transition-colors hover:text-muted-foreground motion-reduce:transition-none"
+                      className="flex h-11 w-8 shrink-0 items-center justify-center text-foreground transition-colors hover:text-muted-foreground motion-reduce:transition-none sm:size-11"
                       href={socialUrls[key]}
                       rel="noopener noreferrer"
                       target="_blank"

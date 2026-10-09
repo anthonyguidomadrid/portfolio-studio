@@ -13,6 +13,7 @@ export const messages = {
   },
   footer: {
     socialMediaLabel: "Social media",
+    emailLinkLabel: "Email",
   },
   pages: {
     about: "About",

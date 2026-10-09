@@ -44,15 +44,23 @@ describe("SiteFooter integration", () => {
       />,
     );
 
-    expect(
-      screen
-        .getByRole("link", { name: "hello@studio.example" })
-        .getAttribute("href"),
-    ).toBe("mailto:hello@studio.example");
+    const emailLink = screen.getByRole("link", {
+      name: "Email hello@studio.example",
+    });
+    expect(emailLink.getAttribute("href")).toBe("mailto:hello@studio.example");
+    expect(emailLink.className).toContain("w-8");
+    expect(emailLink.className).toContain("h-11");
+    expect(emailLink.className).toContain("sm:size-11");
+    expect(emailLink.nextElementSibling?.className).toContain("bg-border");
+    expect(emailLink.nextElementSibling?.className).toContain("hidden");
+    expect(emailLink.nextElementSibling?.className).toContain("sm:w-px");
 
     const socialNavigation = screen.getByRole("navigation", {
       name: "Social media",
     });
+    expect(within(socialNavigation).getByRole("list").className).toContain(
+      "flex-nowrap",
+    );
     const expectedLinks = [
       ["Instagram", "https://instagram.com/studio"],
       ["Facebook", "https://facebook.com/studio"],
@@ -68,7 +76,9 @@ describe("SiteFooter integration", () => {
       expect(link.getAttribute("href")).toBe(href);
       expect(link.getAttribute("target")).toBe("_blank");
       expect(link.getAttribute("rel")).toContain("noopener");
-      expect(link.className).toContain("size-11");
+      expect(link.className).toContain("w-8");
+      expect(link.className).toContain("h-11");
+      expect(link.className).toContain("sm:size-11");
     }
 
     expect(
