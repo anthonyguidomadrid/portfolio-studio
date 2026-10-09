@@ -1,11 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getSiteConfig } from "@/lib/site-config";
+import { getSiteConfig, navigationItems } from "@/lib/site-config";
 
 const previewConfig = {
-  name: "Portfolio Studio",
+  name: "TONY MICK",
   description: "A flexible home for selected work.",
   contactEmail: "hello@example.com",
   socialLinks: [],
+  navigation: navigationItems,
 };
 
 function response(body: unknown, status = 200): Response {
@@ -52,6 +53,7 @@ describe("getSiteConfig", () => {
       description: "Independent work.",
       contactEmail: "hello@studio.example",
       socialLinks: [{ label: "Work", href: "https://example.test/work" }],
+      navigation: navigationItems,
     });
     expect(fetchMock).toHaveBeenCalledWith(
       "https://cms.example.test/wp-json/portfolio-studio/v1/settings",

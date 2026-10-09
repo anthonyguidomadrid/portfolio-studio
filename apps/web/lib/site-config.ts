@@ -3,13 +3,29 @@ export interface SiteConfig {
   description: string;
   contactEmail: string;
   socialLinks: { label: string; href: string }[];
+  navigation: typeof navigationItems;
 }
 
+export const ROUTES = {
+  home: "/",
+  about: "/about",
+  portfolio: "/portfolio",
+  contact: "/contact",
+} as const;
+
+export const navigationItems = [
+  { key: "home", href: ROUTES.home },
+  { key: "about", href: ROUTES.about },
+  { key: "portfolio", href: ROUTES.portfolio },
+  { key: "contact", href: ROUTES.contact },
+] as const;
+
 const previewSiteConfig: SiteConfig = {
-  name: "Portfolio Studio",
+  name: "TONY MICK",
   description: "A flexible home for selected work.",
   contactEmail: "hello@example.com",
   socialLinks: [],
+  navigation: navigationItems,
 };
 
 function validExternalUrl(value: unknown): string | undefined {
@@ -43,6 +59,7 @@ function normalizeSiteConfig(value: unknown): SiteConfig | undefined {
 
   return {
     name: fields.name.trim().slice(0, 120),
+    navigation: navigationItems,
     description:
       typeof fields.description === "string"
         ? fields.description.trim().slice(0, 320)

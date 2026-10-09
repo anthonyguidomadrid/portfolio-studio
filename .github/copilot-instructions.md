@@ -26,6 +26,13 @@
 - Use semantic HTML, descriptive image alternatives, keyboard-operable controls, responsive layouts, and reduced-motion-aware behavior.
 - Do not add real portfolio photography, private content, visitor authentication, analytics, ecommerce, blog/newsletter features, secrets, or deployment actions without an explicit request.
 
+## Component testing
+
+- Add or update focused automated tests in the same change whenever adding a frontend component; do not leave newly introduced components without test coverage.
+- Cover component rendering, primary behavior, and relevant accessibility contracts. For interactive components, test keyboard and pointer behavior, open/closed states, and focus management where applicable.
+- Add unit tests for isolated logic and integration tests for components working with routing, CMS data, or other components. Add test tooling when needed instead of omitting coverage because the existing harness is insufficient.
+- Keep tests close to the frontend test suite under `apps/web/tests` and run the relevant tests alongside typecheck and lint.
+
 ## Verification
 
 Run from the repository root:

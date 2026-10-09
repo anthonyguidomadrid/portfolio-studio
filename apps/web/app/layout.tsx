@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { absoluteUrl, getSiteConfig } from "@/lib/site-config";
+import { Header } from "@/components/header";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -41,7 +42,8 @@ export default function RootLayout({
       className={montserrat.variable}
       data-scroll-behavior="smooth"
     >
-      <body className="min-h-screen bg-background font-sans text-body text-foreground antialiased">
+      <body className="flex min-h-screen flex-col bg-background font-sans text-body text-foreground antialiased">
+        <Header />
         {children}
       </body>
     </html>
