@@ -32,8 +32,6 @@ export function ComingSoonPage({
           </p>
         </div>
       </section>
-
-      {/* {process.env.NODE_ENV === "development" && <ThemePreview />} */}
     </main>
   );
 }
