@@ -36,7 +36,7 @@ export function HeaderNavigation({ name, navigation }: HeaderNavigationProps) {
         <li className="list-none" key={item.key}>
           <Link
             aria-current={isCurrent ? "page" : undefined}
-            className={`flex min-h-11 items-center border-b-2 px-1 text-xs font-medium uppercase tracking-wide transition-colors motion-reduce:transition-none ${
+            className={`flex min-h-11 items-center border-b px-1 text-xs font-medium uppercase tracking-wide transition-colors motion-reduce:transition-none ${
               isCurrent
                 ? "border-foreground text-foreground"
                 : "border-transparent text-muted-foreground hover:border-border hover:text-foreground"

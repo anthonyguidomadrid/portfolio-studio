@@ -35,7 +35,7 @@ export function SiteFooter({
         <div className="flex min-w-0 flex-col items-center gap-4 sm:flex-row sm:gap-6">
           {contactEmail && (
             <a
-              className="flex min-h-11 items-center text-small text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground motion-reduce:transition-none"
+              className="flex min-h-11 items-center text-small text-foreground no-underline decoration-border underline-offset-4 transition-colors hover:underline hover:decoration-foreground motion-reduce:transition-none"
               href={`mailto:${contactEmail}`}
             >
               {contactEmail}
