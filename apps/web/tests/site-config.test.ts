@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { getSiteConfig, navigationItems } from "@/lib/site-config";
 
 const previewConfig = {
-  name: "TONY MICK",
+  name: "STUDIO PORTFOLIO",
   description: "A flexible home for selected work.",
   contactEmail: "hello@example.com",
   socialLinks: [],

@@ -32,7 +32,7 @@ export const navigationItems = [
 ] as const;
 
 const previewSiteConfig: SiteConfig = {
-  name: "TONY MICK",
+  name: "STUDIO PORTFOLIO",
   description: "A flexible home for selected work.",
   contactEmail: "hello@example.com",
   socialLinks: [],

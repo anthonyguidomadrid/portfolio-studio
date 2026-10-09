@@ -51,7 +51,7 @@ describe("HeaderNavigation integration", () => {
 
     const homeLink = screen.getByRole("link", { name: "Go to home page" });
     expect(homeLink.getAttribute("href")).toBe("/");
-    expect(homeLink.textContent).toBe("TONY MICK");
+    expect(homeLink.textContent).toBe("STUDIO PORTFOLIO");
   });
 
   it("exposes an icon-only menu control and starts with the panel inaccessible", () => {
