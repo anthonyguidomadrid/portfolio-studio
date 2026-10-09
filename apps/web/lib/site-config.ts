@@ -3,7 +3,18 @@ export interface SiteConfig {
   description: string;
   contactEmail: string;
   socialLinks: { label: string; href: string }[];
+  socialUrls: SocialUrls;
   navigation: typeof navigationItems;
+}
+
+export interface SocialUrls {
+  instagram: string;
+  facebook: string;
+  twitter: string;
+  youtube: string;
+  pinterest: string;
+  tumblr: string;
+  flickr: string;
 }
 
 export const ROUTES = {
@@ -25,6 +36,15 @@ const previewSiteConfig: SiteConfig = {
   description: "A flexible home for selected work.",
   contactEmail: "hello@example.com",
   socialLinks: [],
+  socialUrls: {
+    instagram: "",
+    facebook: "",
+    twitter: "",
+    youtube: "",
+    pinterest: "",
+    tumblr: "",
+    flickr: "",
+  },
   navigation: navigationItems,
 };
 
@@ -57,6 +77,16 @@ function normalizeSiteConfig(value: unknown): SiteConfig | undefined {
       })
     : [];
 
+  const socialUrls: SocialUrls = {
+    instagram: validExternalUrl(fields.instagramUrl) ?? "",
+    facebook: validExternalUrl(fields.facebookUrl) ?? "",
+    twitter: validExternalUrl(fields.twitterUrl) ?? "",
+    youtube: validExternalUrl(fields.youtubeUrl) ?? "",
+    pinterest: validExternalUrl(fields.pinterestUrl) ?? "",
+    tumblr: validExternalUrl(fields.tumblrUrl) ?? "",
+    flickr: validExternalUrl(fields.flickrUrl) ?? "",
+  };
+
   return {
     name: fields.name.trim().slice(0, 120),
     navigation: navigationItems,
@@ -70,6 +100,7 @@ function normalizeSiteConfig(value: unknown): SiteConfig | undefined {
         ? fields.contactEmail.trim()
         : "",
     socialLinks,
+    socialUrls,
   };
 }
 

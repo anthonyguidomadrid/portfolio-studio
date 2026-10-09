@@ -11,6 +11,9 @@ export const messages = {
     openMenu: "Open navigation menu",
     closeMenu: "Close navigation menu",
   },
+  footer: {
+    socialMediaLabel: "Social media",
+  },
   pages: {
     about: "About",
     cv: "CV",

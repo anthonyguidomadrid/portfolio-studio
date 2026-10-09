@@ -6,6 +6,15 @@ const previewConfig = {
   description: "A flexible home for selected work.",
   contactEmail: "hello@example.com",
   socialLinks: [],
+  socialUrls: {
+    instagram: "",
+    facebook: "",
+    twitter: "",
+    youtube: "",
+    pinterest: "",
+    tumblr: "",
+    flickr: "",
+  },
   navigation: navigationItems,
 };
 
@@ -44,6 +53,13 @@ describe("getSiteConfig", () => {
           { label: "Unsafe", href: "javascript:alert(1)" },
           { label: "", href: "https://example.test/empty" },
         ],
+        instagramUrl: "https://instagram.com/example",
+        facebookUrl: "http://facebook.com/example",
+        twitterUrl: "javascript:alert(1)",
+        youtubeUrl: "",
+        pinterestUrl: "https://pinterest.com/example",
+        tumblrUrl: null,
+        flickrUrl: "https://flickr.com/example",
       }),
     );
     vi.stubGlobal("fetch", fetchMock);
@@ -53,6 +69,15 @@ describe("getSiteConfig", () => {
       description: "Independent work.",
       contactEmail: "hello@studio.example",
       socialLinks: [{ label: "Work", href: "https://example.test/work" }],
+      socialUrls: {
+        instagram: "https://instagram.com/example",
+        facebook: "http://facebook.com/example",
+        twitter: "",
+        youtube: "",
+        pinterest: "https://pinterest.com/example",
+        tumblr: "",
+        flickr: "https://flickr.com/example",
+      },
       navigation: navigationItems,
     });
     expect(fetchMock).toHaveBeenCalledWith(

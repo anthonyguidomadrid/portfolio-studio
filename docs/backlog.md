@@ -17,8 +17,8 @@ One item equals one issue, branch, and PR. Only work on items with an owner, dep
 
 **Status:** Endpoint and frontend client exist; verify end to end when WordPress runtime is available.
 **Owner:** WordPress agent, with frontend contract review
-**Scope:** Confirm `/wp-json/portfolio-studio/v1/settings` exposes `name`, `description`, `contactEmail`, and `socialLinks` only, and that WordPress Settings → Portfolio site updates those values.
-**Acceptance criteria:** An activated local plugin returns the documented public response; invalid social URLs are discarded; no private setting or credential is exposed; `getSiteConfig()` accepts the response and falls back safely when CMS is unavailable.
+**Scope:** Confirm `/wp-json/portfolio-studio/v1/settings` exposes `name`, `description`, `contactEmail`, legacy `socialLinks`, and the seven optional platform URL fields; confirm WordPress Settings → Portfolio site updates them.
+**Acceptance criteria:** An activated local plugin returns the documented public response; invalid platform URLs are discarded and blank fields remain empty; no private setting or credential is exposed; `getSiteConfig()` accepts the response and falls back safely when CMS is unavailable.
 **Verification:** REST request against a local WordPress instance plus `npm --prefix apps/web run test`. If PHP/Docker are unavailable, report this as an unverified integration rather than claiming success.
 **Dependencies:** B01.
 

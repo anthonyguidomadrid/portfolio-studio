@@ -34,18 +34,36 @@ function portfolio_studio_default_site_settings() {
 		'name' => 'Portfolio Studio',
 		'description' => 'A flexible home for selected work.',
 		'contact_email' => '',
+		'instagram_url' => '',
+		'facebook_url' => '',
+		'twitter_url' => '',
+		'youtube_url' => '',
+		'pinterest_url' => '',
+		'tumblr_url' => '',
+		'flickr_url' => '',
 		'social_links' => array(),
 	);
 }
 
+function portfolio_studio_sanitize_social_url($value) {
+	if (!is_string($value) || '' === trim($value)) {
+		return '';
+	}
+
+	$url = esc_url_raw(trim((string) $value), array('http', 'https'));
+	return $url && wp_http_validate_url($url) ? $url : '';
+}
+
 function portfolio_studio_sanitize_site_settings($input) {
 	$input = is_array($input) ? $input : array();
+	$current_settings = get_option('portfolio_studio_site_settings', portfolio_studio_default_site_settings());
+	$current_settings = is_array($current_settings) ? $current_settings : array();
 	$social_links_text = isset($input['social_links_text']) ? sanitize_textarea_field($input['social_links_text']) : '';
-	$social_links = array();
+	$social_links = isset($input['social_links_text']) ? array() : (array) ($current_settings['social_links'] ?? array());
 
 	foreach (preg_split('/\r\n|\r|\n/', $social_links_text) as $line) {
 		$parts = array_map('trim', explode('|', $line, 2));
-		if (2 !== count($parts) || '' === $parts[0]) {
+		if (!isset($input['social_links_text']) || 2 !== count($parts) || '' === $parts[0]) {
 			continue;
 		}
 
@@ -59,6 +77,13 @@ function portfolio_studio_sanitize_site_settings($input) {
 		'name' => isset($input['name']) ? sanitize_text_field($input['name']) : '',
 		'description' => isset($input['description']) ? sanitize_textarea_field($input['description']) : '',
 		'contact_email' => isset($input['contact_email']) ? sanitize_email($input['contact_email']) : '',
+		'instagram_url' => portfolio_studio_sanitize_social_url($input['instagram_url'] ?? ''),
+		'facebook_url' => portfolio_studio_sanitize_social_url($input['facebook_url'] ?? ''),
+		'twitter_url' => portfolio_studio_sanitize_social_url($input['twitter_url'] ?? ''),
+		'youtube_url' => portfolio_studio_sanitize_social_url($input['youtube_url'] ?? ''),
+		'pinterest_url' => portfolio_studio_sanitize_social_url($input['pinterest_url'] ?? ''),
+		'tumblr_url' => portfolio_studio_sanitize_social_url($input['tumblr_url'] ?? ''),
+		'flickr_url' => portfolio_studio_sanitize_social_url($input['flickr_url'] ?? ''),
 		'social_links' => $social_links,
 	);
 }
@@ -89,9 +114,6 @@ function portfolio_studio_render_settings_page() {
 	}
 
 	$settings = wp_parse_args(get_option('portfolio_studio_site_settings', array()), portfolio_studio_default_site_settings());
-	$social_links_text = implode("\n", array_map(static function ($link) {
-		return $link['label'] . ' | ' . $link['href'];
-	}, $settings['social_links']));
 	?>
 	<div class="wrap">
 		<h1><?php esc_html_e('Portfolio site settings', 'portfolio-studio'); ?></h1>
@@ -110,13 +132,29 @@ function portfolio_studio_render_settings_page() {
 					<th scope="row"><label for="portfolio-contact-email"><?php esc_html_e('Contact email', 'portfolio-studio'); ?></label></th>
 					<td><input class="regular-text" id="portfolio-contact-email" name="portfolio_studio_site_settings[contact_email]" type="email" value="<?php echo esc_attr($settings['contact_email']); ?>"></td>
 				</tr>
+				<?php
+				$social_platforms = array(
+					'instagram' => __('Instagram URL', 'portfolio-studio'),
+					'facebook' => __('Facebook URL', 'portfolio-studio'),
+					'twitter' => __('X (Twitter) URL', 'portfolio-studio'),
+					'youtube' => __('YouTube URL', 'portfolio-studio'),
+					'pinterest' => __('Pinterest URL', 'portfolio-studio'),
+					'tumblr' => __('Tumblr URL', 'portfolio-studio'),
+					'flickr' => __('Flickr URL', 'portfolio-studio'),
+				);
+				foreach ($social_platforms as $platform => $label) :
+					$field_id = 'portfolio-' . $platform . '-url';
+				?>
+				<?php if ('instagram' === $platform) : ?>
 				<tr>
-					<th scope="row"><label for="portfolio-social-links"><?php esc_html_e('Social links', 'portfolio-studio'); ?></label></th>
-					<td>
-						<textarea class="large-text code" id="portfolio-social-links" name="portfolio_studio_site_settings[social_links_text]" rows="5"><?php echo esc_textarea($social_links_text); ?></textarea>
-						<p class="description"><?php esc_html_e('One per line as Label | https://example.com. Only valid HTTP and HTTPS links are published.', 'portfolio-studio'); ?></p>
-					</td>
+					<td colspan="2"><p class="description"><?php esc_html_e('All profile links are optional. Only valid HTTP and HTTPS URLs are published.', 'portfolio-studio'); ?></p></td>
 				</tr>
+				<?php endif; ?>
+				<tr>
+					<th scope="row"><label for="<?php echo esc_attr($field_id); ?>"><?php echo esc_html($label); ?></label></th>
+					<td><input class="regular-text" id="<?php echo esc_attr($field_id); ?>" name="portfolio_studio_site_settings[<?php echo esc_attr($platform); ?>_url]" type="url" value="<?php echo esc_attr($settings[$platform . '_url']); ?>" placeholder="https://"></td>
+				</tr>
+				<?php endforeach; ?>
 			</table>
 			<?php submit_button(); ?>
 		</form>
@@ -131,6 +169,13 @@ function portfolio_studio_get_public_site_settings() {
 		'description' => $settings['description'],
 		'contactEmail' => $settings['contact_email'],
 		'socialLinks' => $settings['social_links'],
+		'instagramUrl' => $settings['instagram_url'],
+		'facebookUrl' => $settings['facebook_url'],
+		'twitterUrl' => $settings['twitter_url'],
+		'youtubeUrl' => $settings['youtube_url'],
+		'pinterestUrl' => $settings['pinterest_url'],
+		'tumblrUrl' => $settings['tumblr_url'],
+		'flickrUrl' => $settings['flickr_url'],
 	));
 }
 

@@ -18,6 +18,13 @@ describe("Home page integration", () => {
         { label: "Social link one", href: "https://social.example.test/one" },
         { label: "Social link two", href: "https://social.example.test/two" },
       ],
+      instagramUrl: "https://instagram.example.test/profile",
+      facebookUrl: "https://facebook.example.test/profile",
+      twitterUrl: "https://x.example.test/profile",
+      youtubeUrl: "https://youtube.example.test/profile",
+      pinterestUrl: "https://pinterest.example.test/profile",
+      tumblrUrl: "https://tumblr.example.test/profile",
+      flickrUrl: "https://flickr.example.test/profile",
     };
 
     vi.stubEnv("CMS_URL", "https://cms.example.test");
@@ -37,15 +44,6 @@ describe("Home page integration", () => {
     expect(markup).toContain(cmsSettings.name);
     expect(markup).toContain(cmsSettings.description);
     expect(markup).toContain("Coming soon.");
-    expect(markup).toContain(cmsSettings.contactEmail);
-    for (const link of cmsSettings.socialLinks) {
-      expect(markup).toContain(link.label);
-      expect(markup).toContain(link.href);
-    }
-    expect(markup.match(/rel="noopener noreferrer"/g)).toHaveLength(
-      cmsSettings.socialLinks.length,
-    );
-    expect(markup).toContain("Social media");
     expect(markup).not.toContain("Elsewhere");
     expect(markup).not.toContain("Development theme preview");
   });

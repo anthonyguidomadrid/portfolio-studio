@@ -8,7 +8,7 @@ This single repository contains a small public Next.js app and a self-hosted Wor
 - `apps/wordpress`: custom plugin and Docker build context. WordPress core, database contents, uploads, and credentials remain runtime/deployment data. Intended for Railway.
 - Railway MySQL stores WordPress configuration/content. A persistent volume stores WordPress uploads.
 
-The only public application page is `/`. It displays a Coming Soon message and the site name fetched from WordPress. `/robots.txt`, `/sitemap.xml`, and `/api/revalidate` are technical endpoints, not public content pages.
+The public application includes Home, About, Contact, CV, Portfolio, and portfolio detail routes. These pages currently use the reusable Coming Soon screen. `/robots.txt`, `/sitemap.xml`, and `/api/revalidate` are technical endpoints, not public content pages.
 
 ## Frontend and theme
 
@@ -22,7 +22,7 @@ All CMS requests run on the server. WordPress admin credentials are not required
 
 ## WordPress API boundary
 
-The custom plugin exposes public site settings at `/wp-json/portfolio-studio/v1/settings`: `name`, `description`, `contactEmail`, and `socialLinks` (`label`/`href`). The frontend currently consumes `name` for the Coming Soon page and the settings values for metadata. Only public values are returned. Settings are edited in WordPress **Settings → Portfolio site**.
+The custom plugin exposes public site settings at `/wp-json/portfolio-studio/v1/settings`: `name`, `description`, `contactEmail`, legacy `socialLinks` (`label`/`href`), and optional `instagramUrl`, `facebookUrl`, `twitterUrl`, `youtubeUrl`, `pinterestUrl`, `tumblrUrl`, and `flickrUrl`. Platform URLs are independently optional and contain only public HTTP(S) URLs. The frontend validates these settings and renders configured platform URLs as icon links in the shared footer. The legacy generic list remains in the response for compatibility but is no longer edited in WordPress or rendered by the frontend. Settings are edited in WordPress **Settings → Portfolio site**.
 
 The plugin also contains the portfolio post type, tag taxonomy, media fields, and page publishing hooks for later use, but no portfolio/About/Contact frontend routes currently consume those features. Add such routes only when scope explicitly expands.
 
