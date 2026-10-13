@@ -1,14 +1,17 @@
-import { ComingSoonPage } from "@/components/coming-soon-page";
-import { getSiteConfig } from "@/lib/site-config";
+import type { Metadata } from "next";
+import { CmsPage } from "@/components/cms-page";
+import { getPage } from "@/lib/wordpress-page";
 import { messages } from "@/messages/en";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPage("about");
+  return { title: page?.title ?? messages.pages.about };
+}
+
 export default async function AboutPage() {
-  const siteConfig = await getSiteConfig();
+  const page = await getPage("about");
+
   return (
-    <ComingSoonPage
-      eyebrow={messages.pages.about}
-      siteConfig={siteConfig}
-      title={messages.pages.about}
-    />
+    <CmsPage html={page?.html} title={page?.title ?? messages.pages.about} />
   );
 }

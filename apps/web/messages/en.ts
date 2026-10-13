@@ -24,5 +24,6 @@ export const messages = {
     portfolio: "Portfolio",
     contact: "Contact",
     project: "Project",
+    unavailable: "This page is currently unavailable.",
   },
 } as const;

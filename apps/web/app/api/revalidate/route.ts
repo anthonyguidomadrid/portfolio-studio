@@ -1,6 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
+import { cmsPageCacheTag, isCmsPageSlug } from "@/lib/cms-pages";
 
 export const runtime = "nodejs";
 
@@ -41,7 +42,16 @@ export async function POST(request: Request) {
     );
   }
 
-  const event = payload as { type?: unknown };
+  const event = payload as { type?: unknown; slug?: unknown };
+  if (event.type === "page" && isCmsPageSlug(event.slug)) {
+    revalidateTag(cmsPageCacheTag(event.slug), "max");
+    revalidatePath(`/${event.slug}`);
+    return NextResponse.json({
+      revalidated: true,
+      paths: [`/${event.slug}`],
+    });
+  }
+
   if (event.type === "site_settings") {
     revalidateTag("site-settings", "max");
     revalidatePath("/");
