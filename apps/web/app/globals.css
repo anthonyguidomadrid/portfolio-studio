@@ -72,3 +72,27 @@
     scroll-behavior: auto;
   }
 }
+
+@layer components {
+  .wp-block-columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .wp-block-column {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .wp-block-columns.are-vertically-aligned-center {
+    align-items: center;
+  }
+
+  @media (max-width: 781px) {
+    .wp-block-columns:not(.is-not-stacked-on-mobile)
+      > .wp-block-column {
+      flex-basis: 100% !important;
+    }
+  }
+}

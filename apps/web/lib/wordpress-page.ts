@@ -23,6 +23,7 @@ function toPlainText(html: string): string {
 export function sanitizePageHtml(html: string): string {
   return sanitizeHtml(html, {
     allowedTags: [
+      "div",
       "h2",
       "h3",
       "h4",
@@ -48,7 +49,22 @@ export function sanitizePageHtml(html: string): string {
     ],
     allowedAttributes: {
       a: ["href", "title", "target", "rel"],
+      div: ["style"],
       img: ["src", "alt", "width", "height", "loading", "decoding"],
+    },
+    // Only the Columns block hooks; other WordPress classes carry no styling here.
+    allowedClasses: {
+      div: [
+        "wp-block-columns",
+        "wp-block-column",
+        "are-vertically-aligned-*",
+        "is-vertically-aligned-*",
+        "is-not-stacked-on-mobile",
+      ],
+    },
+    // WordPress writes a column's custom width as a percentage flex-basis.
+    allowedStyles: {
+      div: { "flex-basis": [/^\d{1,3}(\.\d+)?%$/] },
     },
     allowedSchemes: ["https", "http", "mailto", "tel"],
     allowedSchemesByTag: { img: ["https", "http"] },

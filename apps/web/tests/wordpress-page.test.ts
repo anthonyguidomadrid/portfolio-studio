@@ -78,6 +78,34 @@ describe("sanitizePageHtml", () => {
     expect(html).toContain('loading="lazy"');
     expect(html).toContain('alt="Me"');
   });
+
+  it("keeps the WordPress Columns block structure and its layout classes", () => {
+    const html = sanitizePageHtml(
+      '<div class="wp-block-columns is-layout-flex wp-container-core-columns-is-layout-794e3cfa are-vertically-aligned-center">' +
+        '<div class="wp-block-column is-layout-flow" style="flex-basis:66.66%"><p>Left</p></div>' +
+        '<div class="wp-block-column is-vertically-aligned-center"><p>Right</p></div>' +
+        "</div>",
+    );
+
+    expect(html).toContain('<div class="wp-block-columns are-vertically-aligned-center">');
+    expect(html).toContain(
+      '<div class="wp-block-column" style="flex-basis:66.66%"><p>Left</p></div>',
+    );
+    expect(html).toContain(
+      '<div class="wp-block-column is-vertically-aligned-center"><p>Right</p></div>',
+    );
+    expect(html).not.toContain("wp-container-core");
+    expect(html).not.toContain("is-layout");
+  });
+
+  it.each([
+    ["arbitrary classes", '<div class="fixed inset-0 z-50">x</div>', "fixed"],
+    ["other inline styles", '<div style="position:fixed;top:0">x</div>', "position"],
+    ["non-percentage flex-basis", '<div style="flex-basis:url(//evil.example)">x</div>', "evil.example"],
+    ["div handlers", '<div onclick="alert(1)" class="wp-block-column">x</div>', "onclick"],
+  ])("does not let div carry %s", (_label, input, forbidden) => {
+    expect(sanitizePageHtml(input)).not.toContain(forbidden);
+  });
 });
 
 describe("getPage", () => {
