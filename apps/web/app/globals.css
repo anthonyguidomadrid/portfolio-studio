@@ -72,3 +72,12 @@
     scroll-behavior: auto;
   }
 }
+
+/* Resolve the font variable provided by next/font. */
+@theme inline {
+  --font-sans: var(--font-montserrat), Montserrat, sans-serif;
+}
+
+/* Utilities used by the WordPress About page. */
+@source inline("mx-auto max-w-content px-page-gutter py-section bg-background text-foreground font-sans grid grid-cols-1 md:grid-cols-2 grid-cols-2 lg:grid-cols-4 gap-12 gap-x-8 gap-y-7 items-center block w-full aspect-[4/5] object-cover object-center mb-2 mb-3 mb-5 mb-6 mt-2 mt-4 mt-section m-0 p-0 pt-6 py-5 p-6 md:p-9 border-t border-b border border-border border-primary-foreground/60 text-small text-body text-heading-1 text-heading-3 text-lg font-medium tracking-widest tracking-wide uppercase text-muted-foreground inline-block inline-flex min-h-11 items-center justify-center px-5 py-3 flex flex-wrap gap-3 gap-7 justify-between bg-primary text-primary-foreground no-underline list-none hover:bg-primary-foreground hover:text-primary");
+
