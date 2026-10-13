@@ -42,6 +42,7 @@ function portfolio_studio_default_site_settings() {
 		'tumblr_url' => '',
 		'flickr_url' => '',
 		'home_video_url' => '',
+		'home_video_start' => 0,
 		'social_links' => array(),
 	);
 }
@@ -75,6 +76,10 @@ function portfolio_studio_sanitize_youtube_video_url($value) {
 	return is_string($video_id) && preg_match('/^[A-Za-z0-9_-]{11}$/', $video_id)
 		? 'https://www.youtube.com/watch?v=' . $video_id
 		: '';
+}
+
+function portfolio_studio_sanitize_video_start($value) {
+	return is_scalar($value) ? max(0, min((int) $value, 43200)) : 0;
 }
 
 function portfolio_studio_sanitize_social_url($value) {
@@ -117,6 +122,7 @@ function portfolio_studio_sanitize_site_settings($input) {
 		'tumblr_url' => portfolio_studio_sanitize_social_url($input['tumblr_url'] ?? ''),
 		'flickr_url' => portfolio_studio_sanitize_social_url($input['flickr_url'] ?? ''),
 		'home_video_url' => portfolio_studio_sanitize_youtube_video_url($input['home_video_url'] ?? ''),
+		'home_video_start' => portfolio_studio_sanitize_video_start($input['home_video_start'] ?? 0),
 		'social_links' => $social_links,
 	);
 }
@@ -172,6 +178,13 @@ function portfolio_studio_render_settings_page() {
 						<p class="description"><?php esc_html_e('Optional. Plays muted behind the home page. Only YouTube video links (watch, youtu.be, embed, shorts) are saved; anything else is cleared.', 'portfolio-studio'); ?></p>
 					</td>
 				</tr>
+				<tr>
+					<th scope="row"><label for="portfolio-home-video-start"><?php esc_html_e('Home video start (seconds)', 'portfolio-studio'); ?></label></th>
+					<td>
+						<input class="small-text" id="portfolio-home-video-start" name="portfolio_studio_site_settings[home_video_start]" type="number" min="0" max="43200" step="1" value="<?php echo esc_attr((string) $settings['home_video_start']); ?>">
+						<p class="description"><?php esc_html_e('Optional. Whole seconds into the video where playback begins. Leave 0 to start from the beginning.', 'portfolio-studio'); ?></p>
+					</td>
+				</tr>
 				<?php
 				$social_platforms = array(
 					'instagram' => __('Instagram URL', 'portfolio-studio'),
@@ -217,6 +230,7 @@ function portfolio_studio_get_public_site_settings() {
 		'tumblrUrl' => $settings['tumblr_url'],
 		'flickrUrl' => $settings['flickr_url'],
 		'homeVideoUrl' => $settings['home_video_url'],
+		'homeVideoStart' => (int) $settings['home_video_start'],
 	));
 }
 

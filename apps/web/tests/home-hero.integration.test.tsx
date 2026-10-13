@@ -37,6 +37,7 @@ const siteConfig: SiteConfig = {
   description: "An independent creative portfolio.",
   contactEmail: "",
   homeVideoId: "dQw4w9WgXcQ",
+  homeVideoStart: 45,
   socialLinks: [],
   socialUrls: {
     instagram: "",
@@ -66,9 +67,9 @@ describe("HomeHero", () => {
     const content = screen.getByRole("region", { name: "Studio Example" });
     expect(content.className).toContain("text-primary-foreground");
     expect(content.className).toContain("text-shadow");
-    expect(container.querySelector('div[aria-hidden="true"]')?.className).toContain(
-      "bg-primary/60",
-    );
+    expect(
+      container.querySelector('div[aria-hidden="true"]')?.className,
+    ).toContain("bg-primary/60");
   });
 
   it("plays a decorative muted background video that cannot receive focus", () => {
@@ -82,10 +83,23 @@ describe("HomeHero", () => {
       "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?",
     );
     expect(frame?.getAttribute("src")).toContain("mute=1");
+    expect(frame?.getAttribute("src")).toContain("start=45");
     expect(frame?.getAttribute("aria-hidden")).toBe("true");
     expect(frame?.getAttribute("tabindex")).toBe("-1");
     expect(frame?.getAttribute("title")).toBe("Background video");
     expect(frame?.className).toContain("pointer-events-none");
+  });
+
+  it("does not render an iframe when there is no valid video ID", () => {
+    const { container } = render(
+      <HomeHero
+        eyebrow="Portfolio"
+        siteConfig={{ ...siteConfig, homeVideoId: "" }}
+      />,
+    );
+
+    expect(container.querySelector("iframe")).toBeNull();
+    expect(screen.getByRole("heading", { level: 1 })).toBeTruthy();
   });
 
   it("does not load the video when reduced motion is preferred", () => {

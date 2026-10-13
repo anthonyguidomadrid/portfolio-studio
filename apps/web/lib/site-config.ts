@@ -1,10 +1,13 @@
 import { getYouTubeVideoId } from "@/lib/youtube";
 
+const MAX_VIDEO_START_SECONDS = 43200;
+
 export interface SiteConfig {
   name: string;
   description: string;
   contactEmail: string;
   homeVideoId: string;
+  homeVideoStart: number;
   socialLinks: { label: string; href: string }[];
   socialUrls: SocialUrls;
   navigation: typeof navigationItems;
@@ -39,6 +42,7 @@ const previewSiteConfig: SiteConfig = {
   description: "A flexible home for selected work.",
   contactEmail: "hello@example.com",
   homeVideoId: "",
+  homeVideoStart: 0,
   socialLinks: [],
   socialUrls: {
     instagram: "",
@@ -63,6 +67,11 @@ function validExternalUrl(value: unknown): string | undefined {
   } catch {
     return undefined;
   }
+}
+
+function normalizeVideoStart(value: unknown): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) return 0;
+  return Math.min(Math.max(Math.floor(value), 0), MAX_VIDEO_START_SECONDS);
 }
 
 function normalizeSiteConfig(value: unknown): SiteConfig | undefined {
@@ -104,6 +113,7 @@ function normalizeSiteConfig(value: unknown): SiteConfig | undefined {
         ? fields.contactEmail.trim()
         : "",
     homeVideoId: getYouTubeVideoId(fields.homeVideoUrl) ?? "",
+    homeVideoStart: normalizeVideoStart(fields.homeVideoStart),
     socialLinks,
     socialUrls,
   };

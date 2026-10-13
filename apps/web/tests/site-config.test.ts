@@ -6,6 +6,7 @@ const previewConfig = {
   description: "A flexible home for selected work.",
   contactEmail: "hello@example.com",
   homeVideoId: "",
+  homeVideoStart: 0,
   socialLinks: [],
   socialUrls: {
     instagram: "",
@@ -50,6 +51,7 @@ describe("getSiteConfig", () => {
         description: "  Independent work.  ",
         contactEmail: "hello@studio.example",
         homeVideoUrl: "https://youtu.be/dQw4w9WgXcQ",
+        homeVideoStart: 90,
         socialLinks: [
           { label: "Work", href: "https://example.test/work" },
           { label: "Unsafe", href: "javascript:alert(1)" },
@@ -71,6 +73,7 @@ describe("getSiteConfig", () => {
       description: "Independent work.",
       contactEmail: "hello@studio.example",
       homeVideoId: "dQw4w9WgXcQ",
+      homeVideoStart: 90,
       socialLinks: [{ label: "Work", href: "https://example.test/work" }],
       socialUrls: {
         instagram: "https://instagram.com/example",
@@ -90,6 +93,30 @@ describe("getSiteConfig", () => {
         next: { revalidate: 3600, tags: ["site-settings"] },
       }),
     );
+  });
+
+  it.each([
+    [0, 0],
+    [90, 90],
+    [12.9, 12],
+    [-5, 0],
+    [999999, 43200],
+    ["90", 0],
+    [null, 0],
+    [Number.NaN, 0],
+    [undefined, 0],
+  ])("normalizes homeVideoStart %p to %p", async (input, expected) => {
+    vi.stubEnv("CMS_URL", "https://cms.example.test");
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(response({ name: "Site", homeVideoStart: input })),
+    );
+
+    await expect(getSiteConfig()).resolves.toMatchObject({
+      homeVideoStart: expected,
+    });
   });
 
   it("uses preview settings when WordPress is unavailable", async () => {

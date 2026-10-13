@@ -43,12 +43,11 @@ describe("Home page integration", () => {
     expect(markup).toContain("<h1");
     expect(markup).toContain(cmsSettings.name);
     expect(markup).toContain(cmsSettings.description);
-    expect(markup).toContain("Coming soon.");
     expect(markup).not.toContain("Elsewhere");
     expect(markup).not.toContain("Development theme preview");
   });
 
-  it("shows the video hero instead of the coming-soon screen when a home video is set", async () => {
+  it("renders the hero with the site name and description over the overlay", async () => {
     vi.stubEnv("CMS_URL", "https://cms.example.test");
     vi.stubGlobal(
       "fetch",
@@ -73,7 +72,7 @@ describe("Home page integration", () => {
     expect(markup).not.toContain("Coming soon.");
   });
 
-  it("ignores a home video value that is not a YouTube video", async () => {
+  it("keeps the hero text when the home video value is not a YouTube video", async () => {
     vi.stubEnv("CMS_URL", "https://cms.example.test");
     vi.stubGlobal(
       "fetch",
@@ -90,7 +89,9 @@ describe("Home page integration", () => {
 
     const markup = renderToStaticMarkup(await HomePage());
 
-    expect(markup).toContain("Coming soon.");
-    expect(markup).not.toContain("bg-primary/60");
+    expect(markup).toContain("Example Site");
+    expect(markup).toContain("A flexible home for selected work.");
+    expect(markup).not.toContain("evil.example");
+    expect(markup).not.toContain("Coming soon.");
   });
 });

@@ -13,10 +13,11 @@ function subscribe(onChange: () => void) {
 
 interface HomeVideoProps {
   videoId: string;
+  startSeconds?: number;
   title: string;
 }
 
-export function HomeVideo({ videoId, title }: HomeVideoProps) {
+export function HomeVideo({ videoId, startSeconds, title }: HomeVideoProps) {
   // Server snapshot is false so the iframe only loads after hydration.
   const canPlay = useSyncExternalStore(
     subscribe,
@@ -24,7 +25,7 @@ export function HomeVideo({ videoId, title }: HomeVideoProps) {
     () => false,
   );
 
-  if (!canPlay) return null;
+  if (!videoId || !canPlay) return null;
 
   return (
     <iframe
@@ -32,7 +33,7 @@ export function HomeVideo({ videoId, title }: HomeVideoProps) {
       aria-hidden="true"
       className="pointer-events-none absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 border-0"
       referrerPolicy="strict-origin-when-cross-origin"
-      src={youTubeBackgroundEmbedUrl(videoId)}
+      src={youTubeBackgroundEmbedUrl(videoId, startSeconds)}
       tabIndex={-1}
       title={title}
     />

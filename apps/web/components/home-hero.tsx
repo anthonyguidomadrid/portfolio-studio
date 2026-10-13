@@ -11,6 +11,7 @@ export function HomeHero({ eyebrow, siteConfig }: HomeHeroProps) {
   return (
     <main className="relative isolate flex flex-1 overflow-hidden bg-primary">
       <HomeVideo
+        startSeconds={siteConfig.homeVideoStart}
         title={messages.home.videoTitle}
         videoId={siteConfig.homeVideoId}
       />

@@ -28,7 +28,10 @@ export function getYouTubeVideoId(value: unknown): string | undefined {
   return id && VIDEO_ID.test(id) ? id : undefined;
 }
 
-export function youTubeBackgroundEmbedUrl(videoId: string): string {
+export function youTubeBackgroundEmbedUrl(
+  videoId: string,
+  startSeconds = 0,
+): string {
   const params = new URLSearchParams({
     autoplay: "1",
     mute: "1",
@@ -41,6 +44,7 @@ export function youTubeBackgroundEmbedUrl(videoId: string): string {
     disablekb: "1",
     iv_load_policy: "3",
   });
+  if (startSeconds > 0) params.set("start", String(Math.floor(startSeconds)));
 
   return `https://www.youtube-nocookie.com/embed/${videoId}?${params}`;
 }

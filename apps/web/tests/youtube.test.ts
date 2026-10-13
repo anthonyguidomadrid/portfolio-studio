@@ -55,5 +55,18 @@ describe("youTubeBackgroundEmbedUrl", () => {
     expect(url.searchParams.get("loop")).toBe("1");
     expect(url.searchParams.get("playlist")).toBe(ID);
     expect(url.searchParams.get("playsinline")).toBe("1");
+    expect(url.searchParams.has("start")).toBe(false);
+  });
+
+  it("adds the start time in whole seconds only when it is positive", () => {
+    expect(
+      new URL(youTubeBackgroundEmbedUrl(ID, 90)).searchParams.get("start"),
+    ).toBe("90");
+    expect(
+      new URL(youTubeBackgroundEmbedUrl(ID, 12.9)).searchParams.get("start"),
+    ).toBe("12");
+    expect(
+      new URL(youTubeBackgroundEmbedUrl(ID, 0)).searchParams.has("start"),
+    ).toBe(false);
   });
 });

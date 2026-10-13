@@ -1,4 +1,3 @@
-import { ComingSoonPage } from "@/components/coming-soon-page";
 import { HomeHero } from "@/components/home-hero";
 import { getSiteConfig } from "@/lib/site-config";
 import { messages } from "@/messages/en";
