@@ -23,9 +23,6 @@ export function CmsPage({ title, html }: CmsPageProps) {
   return (
     <main className="mx-auto w-full max-w-content flex-1 px-page-gutter py-section">
       <article aria-labelledby="page-title" className="max-w-3xl">
-        <h1 id="page-title" className="text-heading-1">
-          {title}
-        </h1>
         {html === undefined ? (
           <p className="mt-7 text-body text-muted-foreground">
             {messages.pages.unavailable}
