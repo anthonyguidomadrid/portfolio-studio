@@ -11,4 +11,11 @@ if ! printf '%s\n' "$mpm_modules" | grep -q 'mpm_prefork_module' || \
 	exit 1
 fi
 
+# Fresh volumes mount root-owned, so Apache (www-data) cannot create upload folders.
+uploads_dir=/var/www/html/wp-content/uploads
+if [ "$(id -u)" = "0" ] && [ -d "$uploads_dir" ]; then
+	find "$uploads_dir" \! -user www-data -exec chown www-data:www-data {} + ||
+		printf 'Warning: could not set ownership of %s\n' "$uploads_dir" >&2
+fi
+
 exec /usr/local/bin/docker-entrypoint.sh "$@"
