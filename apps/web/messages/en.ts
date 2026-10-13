@@ -15,6 +15,9 @@ export const messages = {
     socialMediaLabel: "Social media",
     emailLinkLabel: "Email",
   },
+  home: {
+    videoTitle: "Background video",
+  },
   pages: {
     about: "About",
     cv: "CV",

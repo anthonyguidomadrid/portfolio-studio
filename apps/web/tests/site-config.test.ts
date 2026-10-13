@@ -5,6 +5,7 @@ const previewConfig = {
   name: "STUDIO PORTFOLIO",
   description: "A flexible home for selected work.",
   contactEmail: "hello@example.com",
+  homeVideoId: "",
   socialLinks: [],
   socialUrls: {
     instagram: "",
@@ -48,6 +49,7 @@ describe("getSiteConfig", () => {
         name: "  Studio Example  ",
         description: "  Independent work.  ",
         contactEmail: "hello@studio.example",
+        homeVideoUrl: "https://youtu.be/dQw4w9WgXcQ",
         socialLinks: [
           { label: "Work", href: "https://example.test/work" },
           { label: "Unsafe", href: "javascript:alert(1)" },
@@ -68,6 +70,7 @@ describe("getSiteConfig", () => {
       name: "Studio Example",
       description: "Independent work.",
       contactEmail: "hello@studio.example",
+      homeVideoId: "dQw4w9WgXcQ",
       socialLinks: [{ label: "Work", href: "https://example.test/work" }],
       socialUrls: {
         instagram: "https://instagram.com/example",

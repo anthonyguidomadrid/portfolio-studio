@@ -1,7 +1,10 @@
+import { getYouTubeVideoId } from "@/lib/youtube";
+
 export interface SiteConfig {
   name: string;
   description: string;
   contactEmail: string;
+  homeVideoId: string;
   socialLinks: { label: string; href: string }[];
   socialUrls: SocialUrls;
   navigation: typeof navigationItems;
@@ -35,6 +38,7 @@ const previewSiteConfig: SiteConfig = {
   name: "STUDIO PORTFOLIO",
   description: "A flexible home for selected work.",
   contactEmail: "hello@example.com",
+  homeVideoId: "",
   socialLinks: [],
   socialUrls: {
     instagram: "",
@@ -99,6 +103,7 @@ function normalizeSiteConfig(value: unknown): SiteConfig | undefined {
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.contactEmail)
         ? fields.contactEmail.trim()
         : "",
+    homeVideoId: getYouTubeVideoId(fields.homeVideoUrl) ?? "",
     socialLinks,
     socialUrls,
   };

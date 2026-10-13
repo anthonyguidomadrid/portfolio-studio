@@ -41,8 +41,40 @@ function portfolio_studio_default_site_settings() {
 		'pinterest_url' => '',
 		'tumblr_url' => '',
 		'flickr_url' => '',
+		'home_video_url' => '',
 		'social_links' => array(),
 	);
+}
+
+function portfolio_studio_sanitize_youtube_video_url($value) {
+	if (!is_string($value) || '' === trim($value)) {
+		return '';
+	}
+
+	$parts = wp_parse_url(trim($value));
+	if (!is_array($parts) || 'https' !== strtolower($parts['scheme'] ?? '') || isset($parts['user']) || isset($parts['port'])) {
+		return '';
+	}
+
+	$host = preg_replace('/^(www|m)\./', '', strtolower($parts['host'] ?? ''));
+	$path = $parts['path'] ?? '';
+	$video_id = '';
+
+	if ('youtu.be' === $host) {
+		$video_id = explode('/', ltrim($path, '/'))[0];
+	} elseif (in_array($host, array('youtube.com', 'youtube-nocookie.com'), true)) {
+		if ('/watch' === $path) {
+			parse_str($parts['query'] ?? '', $query);
+			$video_id = $query['v'] ?? '';
+		} elseif (preg_match('#^/(?:embed|shorts|live)/([^/]+)#', $path, $matches)) {
+			$video_id = $matches[1];
+		}
+	}
+
+	// Only the 11-character ID is trusted; the frontend builds the embed URL from it.
+	return is_string($video_id) && preg_match('/^[A-Za-z0-9_-]{11}$/', $video_id)
+		? 'https://www.youtube.com/watch?v=' . $video_id
+		: '';
 }
 
 function portfolio_studio_sanitize_social_url($value) {
@@ -84,6 +116,7 @@ function portfolio_studio_sanitize_site_settings($input) {
 		'pinterest_url' => portfolio_studio_sanitize_social_url($input['pinterest_url'] ?? ''),
 		'tumblr_url' => portfolio_studio_sanitize_social_url($input['tumblr_url'] ?? ''),
 		'flickr_url' => portfolio_studio_sanitize_social_url($input['flickr_url'] ?? ''),
+		'home_video_url' => portfolio_studio_sanitize_youtube_video_url($input['home_video_url'] ?? ''),
 		'social_links' => $social_links,
 	);
 }
@@ -132,6 +165,13 @@ function portfolio_studio_render_settings_page() {
 					<th scope="row"><label for="portfolio-contact-email"><?php esc_html_e('Contact email', 'portfolio-studio'); ?></label></th>
 					<td><input class="regular-text" id="portfolio-contact-email" name="portfolio_studio_site_settings[contact_email]" type="email" value="<?php echo esc_attr($settings['contact_email']); ?>"></td>
 				</tr>
+				<tr>
+					<th scope="row"><label for="portfolio-home-video-url"><?php esc_html_e('Home video (YouTube URL)', 'portfolio-studio'); ?></label></th>
+					<td>
+						<input class="regular-text" id="portfolio-home-video-url" name="portfolio_studio_site_settings[home_video_url]" type="url" value="<?php echo esc_attr($settings['home_video_url']); ?>" placeholder="https://www.youtube.com/watch?v=">
+						<p class="description"><?php esc_html_e('Optional. Plays muted behind the home page. Only YouTube video links (watch, youtu.be, embed, shorts) are saved; anything else is cleared.', 'portfolio-studio'); ?></p>
+					</td>
+				</tr>
 				<?php
 				$social_platforms = array(
 					'instagram' => __('Instagram URL', 'portfolio-studio'),
@@ -176,6 +216,7 @@ function portfolio_studio_get_public_site_settings() {
 		'pinterestUrl' => $settings['pinterest_url'],
 		'tumblrUrl' => $settings['tumblr_url'],
 		'flickrUrl' => $settings['flickr_url'],
+		'homeVideoUrl' => $settings['home_video_url'],
 	));
 }
 
