@@ -22,7 +22,7 @@ const contentClasses = [
 export function CmsPage({ title, html }: CmsPageProps) {
   return (
     <main className="mx-auto w-full max-w-content flex-1 px-page-gutter py-section">
-      <article aria-labelledby="page-title" className="max-w-3xl">
+      <article aria-label={title} className="max-w-3xl">
         {html === undefined ? (
           <p className="mt-7 text-body text-muted-foreground">
             {messages.pages.unavailable}

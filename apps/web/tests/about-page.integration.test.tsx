@@ -10,21 +10,21 @@ afterEach(() => {
 });
 
 describe("CmsPage", () => {
-  it("renders the title as the only h1 with the sanitized content", () => {
+  it("renders the sanitized content without adding its own headline", () => {
     const markup = renderToStaticMarkup(
       <CmsPage html="<p>Body copy</p><h2>Section</h2>" title="About me" />,
     );
 
-    expect(markup.match(/<h1/g)).toHaveLength(1);
-    expect(markup).toContain(">About me</h1>");
+    expect(markup).not.toContain("<h1");
     expect(markup).toContain("<p>Body copy</p>");
-    expect(markup).toContain('aria-labelledby="page-title"');
+    expect(markup).toContain("<h2>Section</h2>");
+    expect(markup).toContain('aria-label="About me"');
   });
 
   it("shows an unavailable message when there is no content", () => {
     const markup = renderToStaticMarkup(<CmsPage title="About" />);
 
-    expect(markup).toContain(">About</h1>");
+    expect(markup).toContain('aria-label="About"');
     expect(markup).toContain("This page is currently unavailable.");
   });
 
@@ -59,13 +59,13 @@ describe("About page integration", () => {
 
     const markup = renderToStaticMarkup(await AboutPage());
 
-    expect(markup).toContain(">About Tony</h1>");
+    expect(markup).toContain('aria-label="About Tony"');
     expect(markup).toContain("Model based in Madrid.");
     expect(markup).not.toContain("onerror");
     expect(markup).not.toContain("Coming soon.");
   });
 
-  it("falls back to the localized heading when WordPress has no About page", async () => {
+  it("falls back to the localized title when WordPress has no About page", async () => {
     vi.stubEnv("CMS_URL", "https://cms.example.test");
     vi.stubGlobal(
       "fetch",
@@ -79,7 +79,7 @@ describe("About page integration", () => {
 
     const markup = renderToStaticMarkup(await AboutPage());
 
-    expect(markup).toContain(">About</h1>");
+    expect(markup).toContain('aria-label="About"');
     expect(markup).toContain("This page is currently unavailable.");
     expect(markup).not.toContain("Coming soon.");
   });

@@ -87,7 +87,9 @@ describe("sanitizePageHtml", () => {
         "</div>",
     );
 
-    expect(html).toContain('<div class="wp-block-columns are-vertically-aligned-center">');
+    expect(html).toContain(
+      '<div class="wp-block-columns are-vertically-aligned-center">',
+    );
     expect(html).toContain(
       '<div class="wp-block-column" style="flex-basis:66.66%"><p>Left</p></div>',
     );
@@ -100,9 +102,21 @@ describe("sanitizePageHtml", () => {
 
   it.each([
     ["arbitrary classes", '<div class="fixed inset-0 z-50">x</div>', "fixed"],
-    ["other inline styles", '<div style="position:fixed;top:0">x</div>', "position"],
-    ["non-percentage flex-basis", '<div style="flex-basis:url(//evil.example)">x</div>', "evil.example"],
-    ["div handlers", '<div onclick="alert(1)" class="wp-block-column">x</div>', "onclick"],
+    [
+      "other inline styles",
+      '<div style="position:fixed;top:0">x</div>',
+      "position",
+    ],
+    [
+      "non-percentage flex-basis",
+      '<div style="flex-basis:url(//evil.example)">x</div>',
+      "evil.example",
+    ],
+    [
+      "div handlers",
+      '<div onclick="alert(1)" class="wp-block-column">x</div>',
+      "onclick",
+    ],
   ])("does not let div carry %s", (_label, input, forbidden) => {
     expect(sanitizePageHtml(input)).not.toContain(forbidden);
   });
