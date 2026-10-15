@@ -9,10 +9,10 @@ interface CmsPageProps {
 const contentClasses = [
   "mt-8 text-body text-foreground",
   "[&>:first-child]:mt-0",
-  "[&_a]:underline [&_a]:decoration-border [&_a]:underline-offset-4 [&_a:hover]:decoration-foreground",
   "[&_blockquote]:my-6 [&_blockquote]:border-l [&_blockquote]:border-border [&_blockquote]:pl-5 [&_blockquote]:text-muted-foreground",
+  "[&_h1]:mb-5 [&_h1]:mt-8 [&_h1]:text-heading-1",
   "[&_h2]:mb-4 [&_h2]:mt-10 [&_h2]:text-heading-2",
-  "[&_h3]:mb-3 [&_h3]:mt-8 [&_h3]:text-heading-3",
+  "[&_h3]:mb-3 [&_h3]:mt-6 [&_h3]:text-heading-3",
   "[&_h4]:mt-6 [&_h4]:font-semibold",
   "[&_img]:my-6 [&_img]:h-auto [&_img]:max-w-full",
   "[&_li]:my-1 [&_ol]:my-5 [&_ol]:list-decimal [&_ol]:pl-6",
@@ -29,7 +29,7 @@ export function CmsPage({ title, html }: CmsPageProps) {
           </p>
         ) : (
           <div
-            className={contentClasses}
+            className={`cms-page-content ${contentClasses}`}
             dangerouslySetInnerHTML={{ __html: html }}
           />
         )}

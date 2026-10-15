@@ -24,6 +24,7 @@ export function sanitizePageHtml(html: string): string {
   return sanitizeHtml(html, {
     allowedTags: [
       "div",
+      "h1",
       "h2",
       "h3",
       "h4",
@@ -49,7 +50,7 @@ export function sanitizePageHtml(html: string): string {
     ],
     allowedAttributes: {
       a: ["href", "title", "target", "rel"],
-      div: ["style"],
+      div: ["style", "aria-hidden"],
       img: ["src", "alt", "width", "height", "loading", "decoding"],
     },
     // Only the Columns block hooks; other WordPress classes carry no styling here.
@@ -57,21 +58,27 @@ export function sanitizePageHtml(html: string): string {
       div: [
         "wp-block-columns",
         "wp-block-column",
+        "wp-block-spacer",
         "are-vertically-aligned-*",
         "is-vertically-aligned-*",
         "is-not-stacked-on-mobile",
+        "wp-block-button",
+        "is-style-outline",
+        "is-style-outline--*",
       ],
+      a: ["wp-block-button__link", "wp-element-button"],
     },
     // WordPress writes a column's custom width as a percentage flex-basis.
     allowedStyles: {
-      div: { "flex-basis": [/^\d{1,3}(\.\d+)?%$/] },
+      div: {
+        "flex-basis": [/^\d{1,3}(\.\d+)?%$/],
+        height: [/^\d{1,4}(\.\d+)?px$/],
+      },
     },
     allowedSchemes: ["https", "http", "mailto", "tel"],
     allowedSchemesByTag: { img: ["https", "http"] },
     allowProtocolRelative: false,
     transformTags: {
-      // The page title is the only h1 on the route.
-      h1: "h2",
       a: (tagName, attribs) => {
         const attributes = { ...attribs };
         if (attributes.target === "_blank") {

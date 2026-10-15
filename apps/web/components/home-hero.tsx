@@ -16,6 +16,10 @@ export function HomeHero({ eyebrow, siteConfig }: HomeHeroProps) {
         videoId={siteConfig.homeVideoId}
       />
       <div aria-hidden="true" className="absolute inset-0 bg-primary/60" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-24 bg-gradient-to-b from-primary via-primary/90 to-transparent"
+      />
 
       <section
         aria-labelledby="profile-title"

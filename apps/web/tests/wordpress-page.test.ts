@@ -52,10 +52,10 @@ describe("sanitizePageHtml", () => {
     expect(sanitizePageHtml(input).toLowerCase()).not.toContain(forbidden);
   });
 
-  it("downgrades h1 so the page title stays the only h1", () => {
+  it("preserves h1 headings from WordPress content", () => {
     const html = sanitizePageHtml("<h1>Inner</h1>");
 
-    expect(html).toBe("<h2>Inner</h2>");
+    expect(html).toBe("<h1>Inner</h1>");
   });
 
   it("hardens links that open a new tab and strips stray rel and target", () => {
@@ -70,6 +70,19 @@ describe("sanitizePageHtml", () => {
     expect(blank).toContain('target="_blank"');
     expect(plain).not.toContain("target=");
     expect(plain).not.toContain("rel=");
+  });
+
+  it("preserves WordPress button block classes while keeping the PDF as a safe link", () => {
+    const html = sanitizePageHtml(
+      '<div class="wp-block-button is-style-outline is-style-outline--2"><a class="wp-block-button__link wp-element-button" href="https://cms.example.test/cv.pdf" target="_blank" rel="noopener">DOWNLOAD CV ↓</a></div>',
+    );
+
+    expect(html).toContain(
+      '<div class="wp-block-button is-style-outline is-style-outline--2">',
+    );
+    expect(html).toContain(
+      '<a class="wp-block-button__link wp-element-button" href="https://cms.example.test/cv.pdf" target="_blank" rel="noopener noreferrer">DOWNLOAD CV ↓</a>',
+    );
   });
 
   it("lazy-loads images", () => {
@@ -100,6 +113,16 @@ describe("sanitizePageHtml", () => {
     expect(html).not.toContain("is-layout");
   });
 
+  it("preserves WordPress spacer blocks with pixel heights", () => {
+    const html = sanitizePageHtml(
+      '<div style="height:100px" aria-hidden="true" class="wp-block-spacer"></div>',
+    );
+
+    expect(html).toContain('style="height:100px"');
+    expect(html).toContain('aria-hidden="true"');
+    expect(html).toContain('class="wp-block-spacer"');
+  });
+
   it.each([
     ["arbitrary classes", '<div class="fixed inset-0 z-50">x</div>', "fixed"],
     [
@@ -112,6 +135,7 @@ describe("sanitizePageHtml", () => {
       '<div style="flex-basis:url(//evil.example)">x</div>',
       "evil.example",
     ],
+    ["unsafe spacer height", '<div style="height:url(evil)"></div>', "url"],
     [
       "div handlers",
       '<div onclick="alert(1)" class="wp-block-column">x</div>',

@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import AboutPage from "@/app/about/page";
 import { CmsPage } from "@/components/cms-page";
+import { sanitizePageHtml } from "@/lib/wordpress-page";
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -32,6 +33,17 @@ describe("CmsPage", () => {
     const markup = renderToStaticMarkup(<CmsPage html="" title="About" />);
 
     expect(markup).not.toContain("currently unavailable");
+  });
+
+  it("keeps WordPress button links un-underlined at rest and on hover", () => {
+    const html = sanitizePageHtml(
+      '<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="https://example.test/cv.pdf">Download CV</a></div>',
+    );
+    const markup = renderToStaticMarkup(<CmsPage html={html} title="About" />);
+    const contentClass = markup.match(/<div class="([^"]+)"/)?.[1];
+
+    expect(contentClass).toContain("cms-page-content");
+    expect(html).toContain('class="wp-block-button__link wp-element-button"');
   });
 });
 

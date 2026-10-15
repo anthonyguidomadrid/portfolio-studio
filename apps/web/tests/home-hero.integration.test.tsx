@@ -70,6 +70,10 @@ describe("HomeHero", () => {
     expect(
       container.querySelector('div[aria-hidden="true"]')?.className,
     ).toContain("bg-primary/60");
+    expect(
+      container.querySelector('div[aria-hidden="true"].bg-gradient-to-b')
+        ?.className,
+    ).toContain("from-primary");
   });
 
   it("plays a decorative muted background video that cannot receive focus", () => {
