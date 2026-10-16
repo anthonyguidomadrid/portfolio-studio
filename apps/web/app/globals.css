@@ -159,6 +159,13 @@
       flex-basis: 100% !important;
     }
 
+    .wp-block-columns:not(.is-not-stacked-on-mobile):has(
+        > .wp-block-column:nth-child(3)
+      )
+      > .wp-block-column {
+      flex-basis: calc(50% - 1rem) !important;
+    }
+
     .wp-block-button {
       display: block;
       margin-bottom: 2rem;

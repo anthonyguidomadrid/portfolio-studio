@@ -1,5 +1,5 @@
 // Must match the page slugs the WordPress plugin sends revalidation events for.
-export const CMS_PAGE_SLUGS = ["about", "contact"] as const;
+export const CMS_PAGE_SLUGS = ["about", "contact", "videos"] as const;
 
 export type CmsPageSlug = (typeof CMS_PAGE_SLUGS)[number];
 

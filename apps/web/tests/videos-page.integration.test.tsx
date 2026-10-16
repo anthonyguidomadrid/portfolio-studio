@@ -1,0 +1,59 @@
+import { renderToStaticMarkup } from "react-dom/server";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import VideosPage from "@/app/videos/page";
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+});
+
+describe("Videos page integration", () => {
+  it("renders the published WordPress videos page", async () => {
+    vi.stubEnv("CMS_URL", "https://cms.example.test");
+    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(
+        JSON.stringify([
+          {
+            slug: "videos",
+            title: { rendered: "Videos" },
+            content: { rendered: "<p>Selected video work.</p>" },
+          },
+        ]),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const markup = renderToStaticMarkup(await VideosPage());
+
+    expect(markup).toContain('aria-label="Videos"');
+    expect(markup).toContain("Selected video work.");
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        searchParams: expect.any(URLSearchParams),
+      }),
+      expect.anything(),
+    );
+    const requestedUrl = new URL(String(fetchMock.mock.calls[0][0]));
+    expect(requestedUrl.searchParams.get("slug")).toBe("videos");
+  });
+
+  it("shows the unavailable state when WordPress has no Videos page", async () => {
+    vi.stubEnv("CMS_URL", "https://cms.example.test");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn<typeof fetch>().mockResolvedValue(
+        new Response("[]", {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      ),
+    );
+
+    const markup = renderToStaticMarkup(await VideosPage());
+
+    expect(markup).toContain('aria-label="Videos"');
+    expect(markup).toContain("This page is currently unavailable.");
+  });
+});

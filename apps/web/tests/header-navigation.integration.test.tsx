@@ -115,6 +115,17 @@ describe("HeaderNavigation integration", () => {
     expect(mobileNavigation?.hasAttribute("inert")).toBe(true);
   });
 
+  it("includes the Videos page in desktop and mobile navigation", () => {
+    const { container } = render(<HeaderNavigation {...testSite} />);
+
+    const videosLinks = container.querySelectorAll('a[href="/videos"]');
+    expect(videosLinks).toHaveLength(2);
+    expect(Array.from(videosLinks, (link) => link.getAttribute("href"))).toEqual([
+      "/videos",
+      "/videos",
+    ]);
+  });
+
   it("marks only matching destinations current in each navigation", () => {
     vi.mocked(usePathname).mockReturnValue("/portfolio/sample-project");
     render(<HeaderNavigation {...testSite} />);

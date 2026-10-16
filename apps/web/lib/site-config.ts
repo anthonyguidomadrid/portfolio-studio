@@ -27,6 +27,7 @@ export const ROUTES = {
   home: "/",
   about: "/about",
   portfolio: "/portfolio",
+  videos: "/videos",
   contact: "/contact",
 } as const;
 
@@ -34,6 +35,7 @@ export const navigationItems = [
   { key: "home", href: ROUTES.home },
   { key: "about", href: ROUTES.about },
   { key: "portfolio", href: ROUTES.portfolio },
+  { key: "videos", href: ROUTES.videos },
   { key: "contact", href: ROUTES.contact },
 ] as const;
 
