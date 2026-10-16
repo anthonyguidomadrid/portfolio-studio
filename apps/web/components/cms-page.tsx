@@ -14,6 +14,7 @@ const contentClasses = [
   "[&_h2]:mb-4 [&_h2]:mt-10 [&_h2]:text-heading-2",
   "[&_h3]:mb-3 [&_h3]:mt-6 [&_h3]:text-heading-3",
   "[&_h4]:mt-6 [&_h4]:font-semibold",
+  "[&_figure]:my-6 [&_iframe]:aspect-video [&_iframe]:h-auto [&_iframe]:w-full",
   "[&_img]:my-6 [&_img]:h-auto [&_img]:max-w-full",
   "[&_li]:my-1 [&_ol]:my-5 [&_ol]:list-decimal [&_ol]:pl-6",
   "[&_p]:my-5 [&_ul]:my-5 [&_ul]:list-disc [&_ul]:pl-6",

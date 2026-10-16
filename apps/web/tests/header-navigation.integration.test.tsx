@@ -120,10 +120,9 @@ describe("HeaderNavigation integration", () => {
 
     const videosLinks = container.querySelectorAll('a[href="/videos"]');
     expect(videosLinks).toHaveLength(2);
-    expect(Array.from(videosLinks, (link) => link.getAttribute("href"))).toEqual([
-      "/videos",
-      "/videos",
-    ]);
+    expect(
+      Array.from(videosLinks, (link) => link.getAttribute("href")),
+    ).toEqual(["/videos", "/videos"]);
   });
 
   it("marks only matching destinations current in each navigation", () => {

@@ -31,6 +31,17 @@ describe("sanitizePageHtml", () => {
     expect(html).toContain("<ul><li>One</li></ul>");
   });
 
+  it("preserves secure YouTube embeds", () => {
+    const html = sanitizePageHtml(
+      '<figure><div><iframe title="Anuncio Colchones" width="560" height="315" src="https://www.youtube.com/embed/jurj-vtFA6k" allowfullscreen></iframe></div></figure>',
+    );
+
+    expect(html).toContain('title="Anuncio Colchones"');
+    expect(html).toContain('src="https://www.youtube.com/embed/jurj-vtFA6k"');
+    expect(html).toContain("allowfullscreen");
+    expect(html).toContain('loading="lazy"');
+  });
+
   it.each([
     ["script tags", "<p>a</p><script>alert(1)</script>", "<script"],
     [
@@ -40,7 +51,6 @@ describe("sanitizePageHtml", () => {
     ],
     ["javascript links", '<a href="javascript:alert(1)">x</a>', "javascript:"],
     ["data links", '<a href="data:text/html;base64,AAAA">x</a>', "data:"],
-    ["iframes", '<iframe src="https://evil.example"></iframe>', "<iframe"],
     ["styles", '<p style="position:fixed">x</p>', "style="],
     ["forms", '<form action="https://evil.example"><input></form>', "<form"],
     [
@@ -50,6 +60,14 @@ describe("sanitizePageHtml", () => {
     ],
   ])("removes %s", (_label, input, forbidden) => {
     expect(sanitizePageHtml(input).toLowerCase()).not.toContain(forbidden);
+  });
+
+  it("removes iframe sources from untrusted hosts", () => {
+    const html = sanitizePageHtml(
+      '<iframe src="https://evil.example/embed"></iframe>',
+    );
+
+    expect(html).not.toContain('src="https://evil.example/embed"');
   });
 
   it("preserves h1 headings from WordPress content", () => {

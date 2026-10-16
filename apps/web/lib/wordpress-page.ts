@@ -43,6 +43,7 @@ export function sanitizePageHtml(html: string): string {
       "i",
       "a",
       "img",
+      "iframe",
       "figure",
       "figcaption",
       "code",
@@ -52,6 +53,16 @@ export function sanitizePageHtml(html: string): string {
       a: ["href", "title", "target", "rel"],
       div: ["style", "aria-hidden"],
       img: ["src", "alt", "width", "height", "loading", "decoding"],
+      iframe: [
+        "src",
+        "title",
+        "width",
+        "height",
+        "allow",
+        "allowfullscreen",
+        "loading",
+        "referrerpolicy",
+      ],
     },
     // Only the Columns block hooks; other WordPress classes carry no styling here.
     allowedClasses: {
@@ -76,7 +87,13 @@ export function sanitizePageHtml(html: string): string {
       },
     },
     allowedSchemes: ["https", "http", "mailto", "tel"],
-    allowedSchemesByTag: { img: ["https", "http"] },
+    allowedSchemesByTag: { img: ["https", "http"], iframe: ["https"] },
+    allowedIframeHostnames: [
+      "youtube.com",
+      "www.youtube.com",
+      "youtube-nocookie.com",
+      "www.youtube-nocookie.com",
+    ],
     allowProtocolRelative: false,
     transformTags: {
       a: (tagName, attribs) => {
@@ -92,6 +109,10 @@ export function sanitizePageHtml(html: string): string {
       img: (tagName, attribs) => ({
         tagName,
         attribs: { ...attribs, loading: "lazy", decoding: "async" },
+      }),
+      iframe: (tagName, attribs) => ({
+        tagName,
+        attribs: { ...attribs, loading: "lazy" },
       }),
     },
   });
