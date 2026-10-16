@@ -12,6 +12,10 @@ export default async function AboutPage() {
   const page = await getPage("about");
 
   return (
-    <CmsPage html={page?.html} title={page?.title ?? messages.pages.about} />
+    <CmsPage
+      html={page?.html}
+      showBookingCta
+      title={page?.title ?? messages.pages.about}
+    />
   );
 }

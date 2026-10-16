@@ -1,9 +1,11 @@
 import { messages } from "@/messages/en";
+import { BookingCta } from "@/components/booking-cta";
 
 interface CmsPageProps {
   title: string;
   /** Sanitized HTML; undefined means the page could not be loaded. */
   html?: string;
+  showBookingCta?: boolean;
 }
 
 const contentClasses = [
@@ -20,7 +22,7 @@ const contentClasses = [
   "[&_p]:my-5 [&_ul]:my-5 [&_ul]:list-disc [&_ul]:pl-6",
 ].join(" ");
 
-export function CmsPage({ title, html }: CmsPageProps) {
+export function CmsPage({ title, html, showBookingCta = false }: CmsPageProps) {
   return (
     <main className="mx-auto w-full max-w-content flex-1 px-page-gutter py-section">
       <article aria-label={title} className="max-w-3xl">
@@ -35,6 +37,7 @@ export function CmsPage({ title, html }: CmsPageProps) {
           />
         )}
       </article>
+      {showBookingCta && <BookingCta />}
     </main>
   );
 }

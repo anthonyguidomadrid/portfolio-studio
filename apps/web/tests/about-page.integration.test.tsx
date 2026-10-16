@@ -73,6 +73,9 @@ describe("About page integration", () => {
 
     expect(markup).toContain('aria-label="About Tony"');
     expect(markup).toContain("Model based in Madrid.");
+    expect(markup).toContain("Have a project in mind?");
+    expect(markup).toContain('href="/contact"');
+    expect(markup).toContain("Contact for booking");
     expect(markup).not.toContain("onerror");
     expect(markup).not.toContain("Coming soon.");
   });
@@ -93,6 +96,7 @@ describe("About page integration", () => {
 
     expect(markup).toContain('aria-label="About"');
     expect(markup).toContain("This page is currently unavailable.");
+    expect(markup).toContain("Have a project in mind?");
     expect(markup).not.toContain("Coming soon.");
   });
 });

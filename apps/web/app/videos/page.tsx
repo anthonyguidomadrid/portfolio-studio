@@ -12,6 +12,10 @@ export default async function VideosPage() {
   const page = await getPage("videos");
 
   return (
-    <CmsPage html={page?.html} title={page?.title ?? messages.pages.videos} />
+    <CmsPage
+      html={page?.html}
+      showBookingCta
+      title={page?.title ?? messages.pages.videos}
+    />
   );
 }

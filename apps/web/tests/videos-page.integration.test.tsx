@@ -29,6 +29,9 @@ describe("Videos page integration", () => {
 
     expect(markup).toContain('aria-label="Videos"');
     expect(markup).toContain("Selected video work.");
+    expect(markup).toContain("Have a project in mind?");
+    expect(markup).toContain('href="/contact"');
+    expect(markup).toContain("Contact for booking");
     expect(fetchMock).toHaveBeenCalledWith(
       expect.objectContaining({
         searchParams: expect.any(URLSearchParams),

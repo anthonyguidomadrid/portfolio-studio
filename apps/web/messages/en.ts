@@ -16,6 +16,10 @@ export const messages = {
     socialMediaLabel: "Social media",
     emailLinkLabel: "Email",
   },
+  bookingCta: {
+    heading: "Have a project in mind?",
+    action: "Contact for booking",
+  },
   home: {
     videoTitle: "Background video",
   },
