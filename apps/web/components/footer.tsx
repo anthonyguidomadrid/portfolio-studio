@@ -23,6 +23,53 @@ const socialPlatforms = [
 
 type SiteFooterProps = Pick<SiteConfig, "name" | "contactEmail" | "socialUrls">;
 
+export function SocialLinks({
+  socialUrls,
+  variant = "footer",
+}: {
+  socialUrls: Partial<SiteConfig["socialUrls"]>;
+  variant?: "footer" | "contact";
+}) {
+  const availableSocials = socialPlatforms.filter(({ key }) => socialUrls[key]);
+  if (availableSocials.length === 0) return null;
+  const isContact = variant === "contact";
+
+  return (
+    <nav aria-label={messages.footer.socialMediaLabel}>
+      <ul
+        className={
+          isContact
+            ? "contact-social-list m-0 flex list-none flex-wrap items-center justify-start gap-3 p-0"
+            : "m-0 flex flex-nowrap items-center justify-center gap-0 p-0 sm:gap-1"
+        }
+      >
+        {availableSocials.map(({ key, label, Icon }) => (
+          <li className="list-none" key={key}>
+            <a
+              aria-label={label}
+              className={
+                isContact
+                  ? "flex size-12 shrink-0 items-center justify-center text-foreground transition-colors hover:text-muted-foreground motion-reduce:transition-none"
+                  : "flex h-11 w-8 shrink-0 items-center justify-center text-foreground transition-colors hover:text-muted-foreground motion-reduce:transition-none sm:size-11"
+              }
+              href={socialUrls[key]}
+              rel="noopener noreferrer"
+              target="_blank"
+              title={label}
+            >
+              <Icon
+                aria-hidden="true"
+                focusable="false"
+                size={isContact ? 28 : 19}
+              />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
 export function SiteFooter({
   name,
   contactEmail,
@@ -52,26 +99,7 @@ export function SiteFooter({
             />
           )}
 
-          {availableSocials.length > 0 && (
-            <nav aria-label={messages.footer.socialMediaLabel}>
-              <ul className="m-0 flex flex-nowrap items-center justify-center gap-0 p-0 sm:gap-1">
-                {availableSocials.map(({ key, label, Icon }) => (
-                  <li className="list-none" key={key}>
-                    <a
-                      aria-label={label}
-                      className="flex h-11 w-8 shrink-0 items-center justify-center text-foreground transition-colors hover:text-muted-foreground motion-reduce:transition-none sm:size-11"
-                      href={socialUrls[key]}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                      title={label}
-                    >
-                      <Icon aria-hidden="true" focusable="false" size={19} />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          )}
+          <SocialLinks socialUrls={socialUrls} />
         </div>
 
         <p className="m-0 text-center text-small text-muted-foreground sm:text-right">

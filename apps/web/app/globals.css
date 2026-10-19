@@ -134,6 +134,11 @@
 }
 
 @layer components {
+  .cms-page-content ul:not(.contact-social-list) {
+    list-style-type: disc;
+    padding-left: calc(var(--spacing) * 6);
+  }
+
   .wp-block-columns {
     display: flex;
     flex-wrap: wrap;

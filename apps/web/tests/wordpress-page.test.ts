@@ -31,6 +31,14 @@ describe("sanitizePageHtml", () => {
     expect(html).toContain("<ul><li>One</li></ul>");
   });
 
+  it("preserves only the eyebrow class on WordPress paragraphs", () => {
+    const html = sanitizePageHtml(
+      '<p class="eyebrow custom-class">Selected work</p>',
+    );
+
+    expect(html).toBe('<p class="eyebrow">Selected work</p>');
+  });
+
   it("preserves secure YouTube embeds", () => {
     const html = sanitizePageHtml(
       '<figure><div><iframe title="Anuncio Colchones" width="560" height="315" src="https://www.youtube.com/embed/jurj-vtFA6k" allowfullscreen></iframe></div></figure>',
@@ -190,7 +198,11 @@ describe("getPage", () => {
 
     const page = await getPage("about");
 
-    expect(page).toEqual({ title: "About me", html: "<p>Hi</p>" });
+    expect(page).toEqual({
+      title: "About me",
+      html: "<p>Hi</p>",
+      socialUrls: {},
+    });
     const [url, init] = fetchMock.mock.calls[0];
     const requested = new URL(String(url));
     expect(requested.origin + requested.pathname).toBe(

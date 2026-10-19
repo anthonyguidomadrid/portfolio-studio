@@ -64,6 +64,11 @@ describe("HomeHero", () => {
     expect(screen.getByText("An independent creative portfolio.")).toBeTruthy();
     expect(screen.queryByText("Coming soon.")).toBeNull();
 
+    expect(screen.getByText("Portfolio").className).toContain("text-xl");
+    expect(
+      screen.getByText("An independent creative portfolio.").className,
+    ).toContain("text-body");
+
     const content = screen.getByRole("region", { name: "Studio Example" });
     expect(content.className).toContain("text-primary-foreground");
     expect(content.className).toContain("text-shadow");

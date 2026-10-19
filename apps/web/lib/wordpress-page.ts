@@ -1,9 +1,11 @@
 import sanitizeHtml from "sanitize-html";
 import { cmsPageCacheTag, type CmsPageSlug } from "@/lib/cms-pages";
+import type { SocialUrls } from "@/lib/site-config";
 
 export interface CmsPageContent {
   title: string;
   html: string;
+  socialUrls: Partial<SocialUrls>;
 }
 
 const ENTITIES: Record<string, string> = {
@@ -18,6 +20,43 @@ function toPlainText(html: string): string {
   return sanitizeHtml(html, { allowedTags: [], allowedAttributes: {} })
     .replace(/&amp;|&lt;|&gt;|&quot;/g, (entity) => ENTITIES[entity])
     .trim();
+}
+
+function extractSocialUrls(html: string): Partial<SocialUrls> {
+  const socialUrls: Partial<SocialUrls> = {};
+  sanitizeHtml(html, {
+    allowedTags: ["a"],
+    allowedAttributes: { a: ["href"] },
+    transformTags: {
+      a: (tagName, attribs) => {
+        if (typeof attribs.href === "string") {
+          try {
+            const url = new URL(attribs.href);
+            if (url.protocol === "https:") {
+              if (
+                ["instagram.com", "www.instagram.com"].includes(url.hostname)
+              ) {
+                socialUrls.instagram ??= url.toString();
+              }
+              if (
+                ["youtube.com", "www.youtube.com", "m.youtube.com"].includes(
+                  url.hostname,
+                )
+              ) {
+                socialUrls.youtube ??= url.toString();
+              }
+            }
+          } catch {
+            // Ignore malformed or unsafe social URLs.
+          }
+        }
+        return { tagName, attribs };
+      },
+    },
+    allowedSchemes: ["https"],
+    allowProtocolRelative: false,
+  });
+  return socialUrls;
 }
 
 export function sanitizePageHtml(html: string): string {
@@ -77,7 +116,10 @@ export function sanitizePageHtml(html: string): string {
         "is-style-outline",
         "is-style-outline--*",
       ],
+      ul: ["wp-block-social-links"],
+      li: ["wp-social-link", "wp-social-link-*", "wp-block-social-link"],
       a: ["wp-block-button__link", "wp-element-button"],
+      p: ["eyebrow"],
     },
     // WordPress writes a column's custom width as a percentage flex-basis.
     allowedStyles: {
@@ -138,7 +180,11 @@ function normalizePage(
   const plainTitle = toPlainText(title).slice(0, 160);
   if (!plainTitle) return undefined;
 
-  return { title: plainTitle, html: sanitizePageHtml(content).trim() };
+  return {
+    title: plainTitle,
+    html: sanitizePageHtml(content).trim(),
+    socialUrls: extractSocialUrls(content),
+  };
 }
 
 export async function getPage(
