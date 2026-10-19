@@ -12,6 +12,8 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
+require_once __DIR__ . '/portfolio-photos.php';
+
 function portfolio_studio_can_edit_meta($allowed, $meta_key, $post_id) {
 	return current_user_can('edit_post', $post_id);
 }
@@ -258,7 +260,7 @@ function portfolio_studio_register_content() {
 		'has_archive' => false,
 		'rewrite' => array('slug' => 'portfolio', 'with_front' => false),
 		'menu_icon' => 'dashicons-format-gallery',
-		'supports' => array('title', 'editor', 'excerpt', 'thumbnail'),
+		'supports' => array('title', 'editor', 'excerpt', 'thumbnail', 'custom-fields'),
 	));
 
 	register_taxonomy('portfolio_tag', array('portfolio_item'), array(
@@ -432,7 +434,8 @@ function portfolio_studio_revalidate_frontend($new_status, $old_status, $post) {
 	}
 
 	if ('portfolio_item' === $post->post_type) {
-		$type = 'portfolio_item';
+		portfolio_studio_queue_photo_revalidation();
+		return;
 	} elseif ('page' === $post->post_type && in_array($post->post_name, array('about', 'contact'), true)) {
 		$type = 'page';
 	} else {
