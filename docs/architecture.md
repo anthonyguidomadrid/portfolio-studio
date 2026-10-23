@@ -26,6 +26,8 @@ The custom plugin exposes public site settings at `/wp-json/portfolio-studio/v1/
 
 The WordPress plugin exposes the public photo collection at `/wp-json/portfolio-studio/v1/photos`. The frontend validates the response and CMS upload URLs, fetches all pages for complete tag filtering, preserves the backend's display order, and caches responses under `wp-portfolio-photos`. Portfolio publish/media/tag changes send the authenticated collection event and revalidate `/portfolio`. See `apps/wordpress/plugins/portfolio-studio/PHOTOS-API.md` for the response contract and editorial workflow. Portfolio detail routes are not yet connected to a content contract.
 
+The Portfolio listing also reads and sanitizes the published WordPress page with slug `portfolio`, rendering its editorial content above the photo gallery. That page fetch uses the normal one-hour CMS cache. The current WordPress page publishing hook sends page events only for `about` and `contact`, so Portfolio page edits can take up to an hour to appear unless its hook is extended.
+
 ## Environments and publishing
 
 - Local: `docker compose` runs WordPress and MariaDB with named data volumes; run the web app with `npm --prefix apps/web run dev`.

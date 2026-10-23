@@ -54,6 +54,18 @@ describe("POST /api/revalidate", () => {
     expect(revalidatePath).toHaveBeenCalledWith("/about");
   });
 
+  it("supports an authenticated Portfolio page revalidation event", async () => {
+    const response = await POST(request({ type: "page", slug: "portfolio" }));
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      revalidated: true,
+      paths: ["/portfolio"],
+    });
+    expect(revalidateTag).toHaveBeenCalledWith("wp-page-portfolio", "max");
+    expect(revalidatePath).toHaveBeenCalledWith("/portfolio");
+  });
+
   it.each([
     ["an unknown slug", { type: "page", slug: "admin" }],
     ["a path-like slug", { type: "page", slug: "../secret" }],

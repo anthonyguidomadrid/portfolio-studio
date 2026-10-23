@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { CmsPage } from "@/components/cms-page";
 import { PortfolioGallery } from "@/components/portfolio-gallery";
 import { getPortfolioCollection } from "@/lib/portfolio-photos";
+import { getPage } from "@/lib/wordpress-page";
 import { messages } from "@/messages/en";
 
 interface PortfolioPageProps {
@@ -8,14 +10,16 @@ interface PortfolioPageProps {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  return { title: messages.pages.portfolio };
+  const page = await getPage("portfolio");
+  return { title: page?.title ?? messages.pages.portfolio };
 }
 
 export default async function PortfolioPage({
   searchParams,
 }: PortfolioPageProps) {
-  const [{ tag }, collection] = await Promise.all([
+  const [{ tag }, page, collection] = await Promise.all([
     searchParams,
+    getPage("portfolio"),
     getPortfolioCollection(),
   ]);
   const requestedTag = Array.isArray(tag) ? (tag[0] ?? "") : (tag ?? "");
@@ -26,19 +30,23 @@ export default async function PortfolioPage({
     : "";
 
   return (
-    <main className="mx-auto w-full max-w-content flex-1 px-page-gutter py-section">
-      <h1 className="mb-8 mt-0 text-heading-1">{messages.pages.portfolio}</h1>
-      {collection.status === "unavailable" ? (
-        <p className="text-body text-muted-foreground">
-          {messages.portfolio.unavailable}
-        </p>
-      ) : (
-        <PortfolioGallery
-          initialTag={initialTag}
-          items={collection.items}
-          tags={collection.tags}
-        />
-      )}
-    </main>
+    <CmsPage
+      html={page?.html}
+      title={page?.title ?? messages.pages.portfolio}
+    >
+      <section aria-label={messages.pages.portfolio} className="mt-section mb-section">
+        {collection.status === "unavailable" ? (
+          <p className="text-body text-muted-foreground">
+            {messages.portfolio.unavailable}
+          </p>
+        ) : (
+          <PortfolioGallery
+            initialTag={initialTag}
+            items={collection.items}
+            tags={collection.tags}
+          />
+        )}
+      </section>
+    </CmsPage>
   );
 }

@@ -1,4 +1,5 @@
 import parse, { Element } from "html-react-parser";
+import type { ReactNode } from "react";
 import { messages } from "@/messages/en";
 import { BookingCta } from "@/components/booking-cta";
 import { SocialLinks } from "@/components/footer";
@@ -10,6 +11,7 @@ interface CmsPageProps {
   html?: string;
   showBookingCta?: boolean;
   contactSocialUrls?: Partial<SocialUrls>;
+  children?: ReactNode;
 }
 
 const contentClasses = [
@@ -32,6 +34,7 @@ export function CmsPage({
   html,
   showBookingCta = false,
   contactSocialUrls,
+  children,
 }: CmsPageProps) {
   return (
     <main className="mx-auto w-full max-w-content flex-1 px-page-gutter py-section">
@@ -64,6 +67,7 @@ export function CmsPage({
           </div>
         )}
       </article>
+      {children}
       {showBookingCta && <BookingCta />}
     </main>
   );
