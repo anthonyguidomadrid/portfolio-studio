@@ -173,6 +173,7 @@ describe("PortfolioGallery", () => {
       name: "Portfolio photo viewer",
     });
     expect(dialog.hasAttribute("open")).toBe(true);
+    expect(document.activeElement).toBe(dialog);
     expect(document.body.style.overflow).toBe("hidden");
     expect(screen.getByRole("img", { name: "Model in a studio" })).toBeTruthy();
     expect(dialog.className).toContain("p-2");

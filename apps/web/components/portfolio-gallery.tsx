@@ -24,7 +24,6 @@ export function PortfolioGallery({
   );
   const [activePhotoId, setActivePhotoId] = useState<number>();
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
   const filteredItems = selectedTag
     ? items.filter((item) => item.tags.some((tag) => tag.slug === selectedTag))
@@ -59,7 +58,7 @@ export function PortfolioGallery({
     if (!dialog.open) dialog.showModal();
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    closeButtonRef.current?.focus();
+    dialog.focus();
 
     return () => {
       if (dialog.open) dialog.close();
@@ -208,6 +207,7 @@ export function PortfolioGallery({
           if (event.target === dialogRef.current) setActivePhotoId(undefined);
         }}
         ref={dialogRef}
+        tabIndex={-1}
       >
         {activePhoto && (
           <div className="mx-auto grid h-full max-w-content grid-rows-[auto_minmax(0,1fr)] gap-2 sm:gap-4">
@@ -216,7 +216,6 @@ export function PortfolioGallery({
                 aria-label={messages.portfolio.closePhoto}
                 className="flex size-11 items-center justify-center text-white hover:bg-white/15 focus-visible:outline-white"
                 onClick={() => setActivePhotoId(undefined)}
-                ref={closeButtonRef}
                 type="button"
               >
                 <FaXmark aria-hidden="true" size={24} />
