@@ -17,8 +17,9 @@ export function PortfolioGallery({
   tags,
   initialTag,
 }: PortfolioGalleryProps) {
+  const filterTags = tags.filter((tag) => tag.slug !== "all");
   const [selectedTag, setSelectedTag] = useState(() =>
-    tags.some((tag) => tag.slug === initialTag) ? initialTag : "",
+    filterTags.some((tag) => tag.slug === initialTag) ? initialTag : "",
   );
   const [activePhotoId, setActivePhotoId] = useState<number>();
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -27,12 +28,18 @@ export function PortfolioGallery({
   const filteredItems = selectedTag
     ? items.filter((item) => item.tags.some((tag) => tag.slug === selectedTag))
     : items;
-  const activeIndex = filteredItems.findIndex((item) => item.id === activePhotoId);
+  const activeIndex = filteredItems.findIndex(
+    (item) => item.id === activePhotoId,
+  );
   const activePhoto = activeIndex >= 0 ? filteredItems[activeIndex] : undefined;
 
   useEffect(() => {
     const onPopState = () => {
-      setSelectedTag(new URL(window.location.href).searchParams.get("tag") ?? "");
+      const requestedTag =
+        new URL(window.location.href).searchParams.get("tag") ?? "";
+      setSelectedTag(
+        filterTags.some((tag) => tag.slug === requestedTag) ? requestedTag : "",
+      );
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
@@ -67,14 +74,19 @@ export function PortfolioGallery({
         event.preventDefault();
         setActivePhotoId(undefined);
       } else if (event.key === "ArrowLeft" && activeIndex > 0) {
-        const previous = items
-          .filter((item) => !selectedTag || item.tags.some((tag) => tag.slug === selectedTag))
-          [activeIndex - 1];
+        const previous = items.filter(
+          (item) =>
+            !selectedTag || item.tags.some((tag) => tag.slug === selectedTag),
+        )[activeIndex - 1];
         if (previous) setActivePhotoId(previous.id);
-      } else if (event.key === "ArrowRight" && activeIndex < filteredItems.length - 1) {
-        const next = items
-          .filter((item) => !selectedTag || item.tags.some((tag) => tag.slug === selectedTag))
-          [activeIndex + 1];
+      } else if (
+        event.key === "ArrowRight" &&
+        activeIndex < filteredItems.length - 1
+      ) {
+        const next = items.filter(
+          (item) =>
+            !selectedTag || item.tags.some((tag) => tag.slug === selectedTag),
+        )[activeIndex + 1];
         if (next) setActivePhotoId(next.id);
       }
     }
@@ -83,14 +95,25 @@ export function PortfolioGallery({
     return () => {
       dialog.removeEventListener("keydown", handleKeys);
     };
-  }, [activeIndex, activePhoto, activePhotoId, filteredItems.length, items, selectedTag]);
+  }, [
+    activeIndex,
+    activePhoto,
+    activePhotoId,
+    filteredItems.length,
+    items,
+    selectedTag,
+  ]);
 
   function selectTag(tag: string) {
     setSelectedTag(tag);
     const url = new URL(window.location.href);
     if (tag) url.searchParams.set("tag", tag);
     else url.searchParams.delete("tag");
-    window.history.pushState(null, "", `${url.pathname}${url.search}${url.hash}`);
+    window.history.pushState(
+      null,
+      "",
+      `${url.pathname}${url.search}${url.hash}`,
+    );
   }
 
   function openPhoto(photo: PortfolioPhoto, trigger: HTMLElement) {
@@ -115,7 +138,7 @@ export function PortfolioGallery({
           >
             {messages.portfolio.allFilter}
           </button>
-          {tags.map((tag) => (
+          {filterTags.map((tag) => (
             <button
               aria-pressed={selectedTag === tag.slug}
               className={`min-h-11 border px-4 py-2 text-small transition-colors motion-reduce:transition-none ${selectedTag === tag.slug ? "border-foreground bg-foreground text-background" : "border-border bg-background text-foreground hover:border-foreground"}`}

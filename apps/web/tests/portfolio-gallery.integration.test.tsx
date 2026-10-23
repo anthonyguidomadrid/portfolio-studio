@@ -83,23 +83,49 @@ afterEach(() => {
 });
 
 describe("PortfolioGallery", () => {
+  it("renders only one All filter when WordPress includes its reserved all tag", () => {
+    render(
+      <PortfolioGallery
+        initialTag="all"
+        items={photos}
+        tags={[{ id: 0, slug: "all", name: "All" }, ...tags]}
+      />,
+    );
+
+    expect(screen.getAllByRole("button", { name: "All" })).toHaveLength(1);
+    expect(screen.getByRole("button", { name: "All" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getAllByRole("button", { name: /View photo:/ })).toHaveLength(3);
+  });
+
   it("filters the full collection, preserves order and reflects the tag in the URL", async () => {
     const user = userEvent.setup();
     render(<PortfolioGallery initialTag="" items={photos} tags={tags} />);
 
-    expect(screen.getAllByRole("button", { name: /View photo:/ })).toHaveLength(3);
+    expect(screen.getAllByRole("button", { name: /View photo:/ })).toHaveLength(
+      3,
+    );
     await user.click(screen.getByRole("button", { name: "Editorial" }));
 
     const photoButtons = screen.getAllByRole("button", { name: /View photo:/ });
     expect(photoButtons).toHaveLength(2);
-    expect(photoButtons[0].getAttribute("aria-label")).toContain("Editorial One");
-    expect(photoButtons[1].getAttribute("aria-label")).toContain("Editorial Two");
+    expect(photoButtons[0].getAttribute("aria-label")).toContain(
+      "Editorial One",
+    );
+    expect(photoButtons[1].getAttribute("aria-label")).toContain(
+      "Editorial Two",
+    );
     expect(window.location.search).toBe("?tag=editorial");
 
     window.history.replaceState(null, "", "/portfolio?tag=commercial");
     act(() => window.dispatchEvent(new PopStateEvent("popstate")));
-    expect(screen.getAllByRole("button", { name: /View photo:/ })).toHaveLength(1);
-    expect(screen.getByRole("button", { name: "Commercial" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getAllByRole("button", { name: /View photo:/ })).toHaveLength(
+      1,
+    );
+    expect(
+      screen
+        .getByRole("button", { name: "Commercial" })
+        .getAttribute("aria-pressed"),
+    ).toBe("true");
   });
 
   it("opens the native dialog, navigates by arrows, closes with Escape and restores focus", async () => {
@@ -110,7 +136,9 @@ describe("PortfolioGallery", () => {
     });
     await user.click(firstPhoto);
 
-    const dialog = screen.getByRole("dialog", { name: "Portfolio photo viewer" });
+    const dialog = screen.getByRole("dialog", {
+      name: "Portfolio photo viewer",
+    });
     expect(dialog.hasAttribute("open")).toBe(true);
     expect(document.body.style.overflow).toBe("hidden");
     expect(screen.getByRole("img", { name: "Model in a studio" })).toBeTruthy();

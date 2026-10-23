@@ -35,21 +35,23 @@ Example response (illustrative data, not seeded content):
 
 ```json
 {
-  "items": [{
-    "id": 101,
-    "slug": "example-photo",
-    "title": "Example photo",
-    "displayOrder": 0,
-    "image": {
-      "id": 201,
-      "url": "https://cms.example.test/wp-content/uploads/example.jpg",
-      "width": 800,
-      "height": 1000,
-      "alt": "Example descriptive alternative",
-      "caption": ""
-    },
-    "tags": [{ "id": 5, "slug": "editorial", "name": "Editorial" }]
-  }],
+  "items": [
+    {
+      "id": 101,
+      "slug": "example-photo",
+      "title": "Example photo",
+      "displayOrder": 0,
+      "image": {
+        "id": 201,
+        "url": "https://cms.example.test/wp-content/uploads/example.jpg",
+        "width": 800,
+        "height": 1000,
+        "alt": "Example descriptive alternative",
+        "caption": ""
+      },
+      "tags": [{ "id": 5, "slug": "editorial", "name": "Editorial" }]
+    }
+  ],
   "tags": [{ "id": 5, "slug": "editorial", "name": "Editorial" }],
   "total": 1,
   "totalPages": 1,

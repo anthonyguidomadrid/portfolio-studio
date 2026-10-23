@@ -44,9 +44,11 @@ describe("getPortfolioCollection", () => {
     vi.stubEnv("CMS_URL", "https://cms.example.test");
     vi.stubGlobal(
       "fetch",
-      vi.fn<typeof fetch>().mockResolvedValue(
-        json({ items: [], tags: [], total: 0, totalPages: 0, page: 1 }),
-      ),
+      vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(
+          json({ items: [], tags: [], total: 0, totalPages: 0, page: 1 }),
+        ),
     );
     await expect(getPortfolioCollection()).resolves.toEqual({
       status: "available",
@@ -57,7 +59,8 @@ describe("getPortfolioCollection", () => {
 
   it("fetches every page in API order and caches it with the gallery tag", async () => {
     vi.stubEnv("CMS_URL", "https://cms.example.test/");
-    const fetchMock = vi.fn<typeof fetch>()
+    const fetchMock = vi
+      .fn<typeof fetch>()
       .mockResolvedValueOnce(
         json({
           items: [photo(1, 1)],
@@ -159,7 +162,9 @@ describe("getPortfolioCollection", () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     vi.stubGlobal(
       "fetch",
-      vi.fn<typeof fetch>().mockResolvedValue(json({ message: "Offline" }, 503)),
+      vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(json({ message: "Offline" }, 503)),
     );
 
     await expect(getPortfolioCollection()).resolves.toMatchObject({

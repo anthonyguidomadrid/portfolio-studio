@@ -55,8 +55,15 @@ function parseTag(value: unknown): PortfolioTag | undefined {
   return { id: value.id as number, slug: value.slug, name: value.name.trim() };
 }
 
-function parsePhoto(value: unknown, cmsOrigin: string): PortfolioPhoto | undefined {
-  if (!isRecord(value) || !isRecord(value.image) || !Array.isArray(value.tags)) {
+function parsePhoto(
+  value: unknown,
+  cmsOrigin: string,
+): PortfolioPhoto | undefined {
+  if (
+    !isRecord(value) ||
+    !isRecord(value.image) ||
+    !Array.isArray(value.tags)
+  ) {
     return undefined;
   }
 
@@ -114,7 +121,10 @@ function parsePhoto(value: unknown, cmsOrigin: string): PortfolioPhoto | undefin
   };
 }
 
-function parsePage(value: unknown, expectedPage: number): PortfolioApiPage | undefined {
+function parsePage(
+  value: unknown,
+  expectedPage: number,
+): PortfolioApiPage | undefined {
   if (!isRecord(value)) return undefined;
   if (
     !Array.isArray(value.items) ||
@@ -177,7 +187,10 @@ export async function getPortfolioCollection(): Promise<PortfolioCollection> {
         throw new Error("WordPress photo response had an invalid shape.");
       }
       const totalPages = body.totalPages === 0 ? 1 : body.totalPages;
-      if (expectedTotalPages !== undefined && expectedTotalPages !== totalPages) {
+      if (
+        expectedTotalPages !== undefined &&
+        expectedTotalPages !== totalPages
+      ) {
         throw new Error("WordPress photo collection changed while paginating.");
       }
       expectedTotalPages = totalPages;
@@ -190,7 +203,9 @@ export async function getPortfolioCollection(): Promise<PortfolioCollection> {
         tags = parsedTags as PortfolioTag[];
       }
 
-      const parsedItems = body.items.map((item) => parsePhoto(item, endpoint.origin));
+      const parsedItems = body.items.map((item) =>
+        parsePhoto(item, endpoint.origin),
+      );
       if (parsedItems.some((item) => !item)) {
         throw new Error("WordPress photo items had an invalid shape.");
       }

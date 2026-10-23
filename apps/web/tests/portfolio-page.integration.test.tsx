@@ -42,7 +42,9 @@ describe("Portfolio page integration", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const markup = renderToStaticMarkup(
-      await PortfolioPage({ searchParams: Promise.resolve({ tag: "editorial" }) }),
+      await PortfolioPage({
+        searchParams: Promise.resolve({ tag: "editorial" }),
+      }),
     );
 
     expect(markup).toContain("Studio Portrait");
@@ -61,7 +63,9 @@ describe("Portfolio page integration", () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     vi.stubGlobal(
       "fetch",
-      vi.fn<typeof fetch>().mockResolvedValue(new Response("offline", { status: 503 })),
+      vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(new Response("offline", { status: 503 })),
     );
 
     const markup = renderToStaticMarkup(
@@ -69,6 +73,8 @@ describe("Portfolio page integration", () => {
     );
 
     expect(markup).toContain("Portfolio photos are temporarily unavailable.");
-    expect(markup).not.toContain("No portfolio photos have been published yet.");
+    expect(markup).not.toContain(
+      "No portfolio photos have been published yet.",
+    );
   });
 });

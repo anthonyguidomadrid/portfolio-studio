@@ -18,8 +18,10 @@ export default async function PortfolioPage({
     searchParams,
     getPortfolioCollection(),
   ]);
-  const requestedTag = Array.isArray(tag) ? tag[0] ?? "" : tag ?? "";
-  const initialTag = collection.tags.some((item) => item.slug === requestedTag)
+  const requestedTag = Array.isArray(tag) ? (tag[0] ?? "") : (tag ?? "");
+  const initialTag = collection.tags.some(
+    (item) => item.slug === requestedTag && item.slug !== "all",
+  )
     ? requestedTag
     : "";
 
