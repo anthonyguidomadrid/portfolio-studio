@@ -173,6 +173,7 @@ export async function getPortfolioCollection(): Promise<PortfolioCollection> {
       const url = new URL(endpoint);
       url.searchParams.set("page", String(page));
       url.searchParams.set("per_page", String(PAGE_SIZE));
+      url.searchParams.set("tag", "all");
       const response = await fetch(url, {
         headers: { Accept: "application/json" },
         signal: AbortSignal.timeout(8000),

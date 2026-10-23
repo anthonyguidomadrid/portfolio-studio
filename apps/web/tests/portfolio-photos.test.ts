@@ -90,6 +90,7 @@ describe("getPortfolioCollection", () => {
     const secondUrl = new URL(String(fetchMock.mock.calls[1][0]));
     expect(firstUrl.searchParams.get("per_page")).toBe("100");
     expect(firstUrl.searchParams.get("page")).toBe("1");
+    expect(firstUrl.searchParams.get("tag")).toBe("all");
     expect(secondUrl.searchParams.get("page")).toBe("2");
     expect(fetchMock.mock.calls[0][1]).toEqual(
       expect.objectContaining({
