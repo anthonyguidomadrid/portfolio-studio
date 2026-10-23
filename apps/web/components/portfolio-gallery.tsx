@@ -38,12 +38,14 @@ export function PortfolioGallery({
       const requestedTag =
         new URL(window.location.href).searchParams.get("tag") ?? "";
       setSelectedTag(
-        filterTags.some((tag) => tag.slug === requestedTag) ? requestedTag : "",
+        tags.some((tag) => tag.slug === requestedTag && tag.slug !== "all")
+          ? requestedTag
+          : "",
       );
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
-  }, []);
+  }, [tags]);
 
   useEffect(() => {
     if (activePhotoId === undefined) {

@@ -93,8 +93,12 @@ describe("PortfolioGallery", () => {
     );
 
     expect(screen.getAllByRole("button", { name: "All" })).toHaveLength(1);
-    expect(screen.getByRole("button", { name: "All" }).getAttribute("aria-pressed")).toBe("true");
-    expect(screen.getAllByRole("button", { name: /View photo:/ })).toHaveLength(3);
+    expect(
+      screen.getByRole("button", { name: "All" }).getAttribute("aria-pressed"),
+    ).toBe("true");
+    expect(screen.getAllByRole("button", { name: /View photo:/ })).toHaveLength(
+      3,
+    );
   });
 
   it("filters the full collection, preserves order and reflects the tag in the URL", async () => {
