@@ -61,6 +61,24 @@ export async function POST(request: Request) {
     });
   }
 
+  if (event.type === "portfolio_item" && event.slug === "") {
+    revalidateTag("wp-portfolio-photos", "max");
+    revalidatePath("/portfolio");
+    return NextResponse.json({
+      revalidated: true,
+      paths: ["/portfolio"],
+    });
+  }
+
+  if (event.type === "portfolio_item" && event.slug === "") {
+    revalidateTag("wp-portfolio-photos", "max");
+    revalidatePath("/portfolio");
+    return NextResponse.json({
+      revalidated: true,
+      paths: ["/portfolio"],
+    });
+  }
+
   return NextResponse.json(
     { error: "Unsupported revalidation event." },
     { status: 400 },

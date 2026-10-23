@@ -74,4 +74,26 @@ describe("POST /api/revalidate", () => {
     expect(revalidateTag).toHaveBeenCalledWith("site-settings", "max");
     expect(revalidatePath).toHaveBeenCalledWith("/");
   });
+
+  it("refreshes the cached portfolio collection only for the collection event", async () => {
+    const response = await POST(request({ type: "portfolio_item", slug: "" }));
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      revalidated: true,
+      paths: ["/portfolio"],
+    });
+    expect(revalidateTag).toHaveBeenCalledWith("wp-portfolio-photos", "max");
+    expect(revalidatePath).toHaveBeenCalledWith("/portfolio");
+  });
+
+  it("rejects portfolio events with item slugs instead of the collection marker", async () => {
+    const response = await POST(
+      request({ type: "portfolio_item", slug: "sample-photo" }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(revalidateTag).not.toHaveBeenCalled();
+    expect(revalidatePath).not.toHaveBeenCalled();
+  });
 });

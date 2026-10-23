@@ -7,5 +7,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: absoluteUrl("/").toString(),
       changeFrequency: "monthly",
     },
+    {
+      url: absoluteUrl("/portfolio").toString(),
+      changeFrequency: "weekly",
+    },
   ];
 }
