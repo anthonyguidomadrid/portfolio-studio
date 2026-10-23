@@ -1,10 +1,12 @@
 # Portfolio Photo Contract
 
-One published `portfolio_item` represents one photograph. Select its **Cover
-image**, assign **Portfolio tags**, and set **Display order** in the existing
-editor. Lower orders appear first; ties use natural case-insensitive title order,
-then ascending item ID. Missing order metadata is treated as zero. Existing
-gallery, video, and credits fields are retained but not used by this collection.
+One published `portfolio_item` represents one photograph. Assign **Portfolio
+tags** and set **Display order** in the existing editor. The collection uses the
+custom **Cover image** when selected, otherwise it falls back to the WordPress
+**Featured image**. Lower orders appear first; ties use natural case-insensitive
+title order, then ascending item ID. Missing order metadata is treated as zero.
+Existing gallery, video, and credits fields are retained but not used by this
+collection.
 
 ## Public Read
 

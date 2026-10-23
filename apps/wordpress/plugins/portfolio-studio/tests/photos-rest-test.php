@@ -23,6 +23,27 @@ class Portfolio_Studio_Photos_REST_Test extends WP_UnitTestCase {
 		return $post_id;
 	}
 
+	private function featured_photo($title) {
+		$post_id = self::factory()->post->create(array(
+			'post_type' => 'portfolio_item',
+			'post_title' => $title,
+			'post_status' => 'publish',
+		));
+		$image_id = self::factory()->post->create(array(
+			'post_type' => 'attachment',
+			'post_mime_type' => 'image/jpeg',
+			'post_status' => 'inherit',
+			'post_parent' => $post_id,
+		));
+		update_post_meta($image_id, '_wp_attached_file', 'featured-photo.jpg');
+		update_post_meta($image_id, '_wp_attachment_metadata', array(
+			'width' => 640, 'height' => 960, 'file' => 'featured-photo.jpg',
+		));
+		update_post_meta($image_id, '_wp_attachment_image_alt', 'Featured portrait');
+		set_post_thumbnail($post_id, $image_id);
+		return array($post_id, $image_id);
+	}
+
 	private function collection($params = array()) {
 		wp_set_current_user(0);
 		$request = new WP_REST_Request('GET', '/portfolio-studio/v1/photos');
@@ -86,5 +107,15 @@ class Portfolio_Studio_Photos_REST_Test extends WP_UnitTestCase {
 		wp_update_post(array('ID' => $image_id, 'post_parent' => $private_id));
 		$data = $this->collection()->get_data();
 		$this->assertSame(array(), $data['items']);
+	}
+
+	public function test_featured_image_is_used_when_custom_cover_is_empty() {
+		list($post_id, $image_id) = $this->featured_photo('Featured fallback');
+		$data = $this->collection()->get_data();
+
+		$this->assertSame(1, $data['total']);
+		$this->assertSame($image_id, $data['items'][0]['image']['id']);
+		$this->assertSame('Featured portrait', $data['items'][0]['image']['alt']);
+		$this->assertSame(0, (int) get_post_meta($post_id, 'portfolio_cover_image_id', true));
 	}
 }

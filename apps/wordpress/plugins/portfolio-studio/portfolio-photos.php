@@ -10,6 +10,9 @@ function portfolio_studio_public_photo($post) {
 	}
 
 	$image_id = (int) get_post_meta($post->ID, 'portfolio_cover_image_id', true);
+	if (!$image_id) {
+		$image_id = (int) get_post_thumbnail_id($post->ID);
+	}
 	$image = get_post($image_id);
 	if (!$image || 'attachment' !== $image->post_type || !wp_attachment_is_image($image_id) || !in_array($image->post_status, array('inherit', 'publish'), true)) {
 		return null;
