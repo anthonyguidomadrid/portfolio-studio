@@ -30,11 +30,11 @@ export default async function PortfolioPage({
     : "";
 
   return (
-    <CmsPage
-      html={page?.html}
-      title={page?.title ?? messages.pages.portfolio}
-    >
-      <section aria-label={messages.pages.portfolio} className="mt-section mb-section">
+    <CmsPage html={page?.html} title={page?.title ?? messages.pages.portfolio}>
+      <section
+        aria-label={messages.pages.portfolio}
+        className="mt-section mb-section"
+      >
         {collection.status === "unavailable" ? (
           <p className="text-body text-muted-foreground">
             {messages.portfolio.unavailable}

@@ -11,47 +11,49 @@ afterEach(() => {
 describe("Portfolio page integration", () => {
   it("renders photos and the initial tag selected from the URL", async () => {
     vi.stubEnv("CMS_URL", "https://cms.example.test");
-    const fetchMock = vi.fn<typeof fetch>().mockImplementation(async (input) => {
-      const url = new URL(String(input));
-      const body = url.pathname.endsWith("/wp/v2/pages")
-        ? [
-            {
-              slug: "portfolio",
-              title: { rendered: "My selected work" },
-              content: {
-                rendered:
-                  '<p class="eyebrow">Fashion &amp; campaign work</p><p>Explore the portfolio.</p>',
-              },
-            },
-          ]
-        : {
-            items: [
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockImplementation(async (input) => {
+        const url = new URL(String(input));
+        const body = url.pathname.endsWith("/wp/v2/pages")
+          ? [
               {
-                id: 10,
-                slug: "studio-portrait",
-                title: "Studio Portrait",
-                displayOrder: 1,
-                image: {
-                  id: 110,
-                  url: "https://cms.example.test/wp-content/uploads/studio-portrait.jpg",
-                  width: 800,
-                  height: 1200,
-                  alt: "Model in the studio",
-                  caption: "Studio session",
+                slug: "portfolio",
+                title: { rendered: "My selected work" },
+                content: {
+                  rendered:
+                    '<p class="eyebrow">Fashion &amp; campaign work</p><p>Explore the portfolio.</p>',
                 },
-                tags: [{ id: 1, slug: "editorial", name: "Editorial" }],
               },
-            ],
-            tags: [{ id: 1, slug: "editorial", name: "Editorial" }],
-            total: 1,
-            totalPages: 1,
-            page: 1,
-          };
-      return new Response(JSON.stringify(body), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
+            ]
+          : {
+              items: [
+                {
+                  id: 10,
+                  slug: "studio-portrait",
+                  title: "Studio Portrait",
+                  displayOrder: 1,
+                  image: {
+                    id: 110,
+                    url: "https://cms.example.test/wp-content/uploads/studio-portrait.jpg",
+                    width: 800,
+                    height: 1200,
+                    alt: "Model in the studio",
+                    caption: "Studio session",
+                  },
+                  tags: [{ id: 1, slug: "editorial", name: "Editorial" }],
+                },
+              ],
+              tags: [{ id: 1, slug: "editorial", name: "Editorial" }],
+              total: 1,
+              totalPages: 1,
+              page: 1,
+            };
+        return new Response(JSON.stringify(body), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
       });
-    });
     vi.stubGlobal("fetch", fetchMock);
 
     const markup = renderToStaticMarkup(
