@@ -101,6 +101,35 @@ describe("PortfolioGallery", () => {
     );
   });
 
+  it("decodes WordPress HTML entities in future tag names", () => {
+    render(
+      <PortfolioGallery
+        initialTag=""
+        items={photos}
+        tags={[
+          {
+            id: 3,
+            slug: "swimwear-underwear",
+            name: "Swimwear &amp; Underwear",
+          },
+          {
+            id: 4,
+            slug: "editorial-long-dash",
+            name: "Culture &#8212; Editorial",
+          },
+        ]}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Swimwear & Underwear" }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("button", { name: "Culture \u2014 Editorial" }),
+    ).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /&amp;/ })).toBeNull();
+  });
+
   it("filters the full collection, preserves order and reflects the tag in the URL", async () => {
     const user = userEvent.setup();
     render(<PortfolioGallery initialTag="" items={photos} tags={tags} />);
@@ -146,11 +175,18 @@ describe("PortfolioGallery", () => {
     expect(dialog.hasAttribute("open")).toBe(true);
     expect(document.body.style.overflow).toBe("hidden");
     expect(screen.getByRole("img", { name: "Model in a studio" })).toBeTruthy();
+    expect(dialog.className).toContain("p-2");
+    expect(dialog.textContent).not.toContain("First editorial");
+    expect(
+      Array.from(dialog.querySelectorAll("div")).some((element) =>
+        element.classList.contains("grid-cols-[2.75rem_minmax(0,1fr)_2.75rem]"),
+      ),
+    ).toBe(true);
 
     await user.keyboard("{ArrowRight}");
-    expect(screen.getByText("First commercial")).toBeTruthy();
+    expect(screen.getByRole("img", { name: "Product campaign" })).toBeTruthy();
     await user.keyboard("{ArrowLeft}");
-    expect(screen.getByText("First editorial")).toBeTruthy();
+    expect(screen.getByRole("img", { name: "Model in a studio" })).toBeTruthy();
     await user.keyboard("{Escape}");
 
     expect(dialog.hasAttribute("open")).toBe(false);

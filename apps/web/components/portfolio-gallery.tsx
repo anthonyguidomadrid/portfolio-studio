@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { decode } from "he";
 import { useEffect, useRef, useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaXmark } from "react-icons/fa6";
 import type { PortfolioPhoto, PortfolioTag } from "@/lib/portfolio-photos";
@@ -148,7 +149,7 @@ export function PortfolioGallery({
               onClick={() => selectTag(tag.slug)}
               type="button"
             >
-              {tag.name}
+              {decode(tag.name)}
             </button>
           ))}
         </div>
@@ -198,7 +199,7 @@ export function PortfolioGallery({
 
       <dialog
         aria-label={messages.portfolio.lightboxLabel}
-        className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none border-0 bg-black/95 p-4 text-white backdrop:bg-black/80 sm:p-8"
+        className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none border-0 bg-black/95 p-2 text-white backdrop:bg-black/80 sm:p-4"
         onCancel={(event) => {
           event.preventDefault();
           setActivePhotoId(undefined);
@@ -209,7 +210,7 @@ export function PortfolioGallery({
         ref={dialogRef}
       >
         {activePhoto && (
-          <div className="mx-auto grid h-full max-w-content grid-rows-[auto_1fr_auto] gap-4">
+          <div className="mx-auto grid h-full max-w-content grid-rows-[auto_minmax(0,1fr)] gap-2 sm:gap-4">
             <div className="flex justify-end">
               <button
                 aria-label={messages.portfolio.closePhoto}
@@ -221,27 +222,28 @@ export function PortfolioGallery({
                 <FaXmark aria-hidden="true" size={24} />
               </button>
             </div>
-            <div className="flex min-h-0 items-center justify-center gap-2 sm:gap-5">
+            <div className="grid min-h-0 min-w-0 grid-cols-[2.75rem_minmax(0,1fr)_2.75rem] items-center gap-1 sm:grid-cols-[3rem_minmax(0,1fr)_3rem] sm:gap-4">
               <button
                 aria-label={messages.portfolio.previousPhoto}
-                className="flex size-11 shrink-0 items-center justify-center text-white hover:bg-white/15 disabled:invisible focus-visible:outline-white sm:size-12"
+                className="flex size-11 items-center justify-center justify-self-center text-white hover:bg-white/15 disabled:invisible focus-visible:outline-white sm:size-12"
                 disabled={activeIndex <= 0}
                 onClick={() => stepPhoto(-1)}
                 type="button"
               >
                 <FaChevronLeft aria-hidden="true" size={20} />
               </button>
-              <Image
-                alt={activePhoto.image.alt}
-                className="h-auto max-h-full w-auto max-w-full object-contain"
-                height={activePhoto.image.height}
-                sizes="(max-width: 767px) 85vw, 80vw"
-                src={activePhoto.image.url}
-                width={activePhoto.image.width}
-              />
+              <div className="relative h-full min-h-0 min-w-0 w-full">
+                <Image
+                  alt={activePhoto.image.alt}
+                  className="object-contain"
+                  fill
+                  sizes="(max-width: 767px) calc(100vw - 7rem), (max-width: 1279px) calc(100vw - 10rem), 67rem"
+                  src={activePhoto.image.url}
+                />
+              </div>
               <button
                 aria-label={messages.portfolio.nextPhoto}
-                className="flex size-11 shrink-0 items-center justify-center text-white hover:bg-white/15 disabled:invisible focus-visible:outline-white sm:size-12"
+                className="flex size-11 items-center justify-center justify-self-center text-white hover:bg-white/15 disabled:invisible focus-visible:outline-white sm:size-12"
                 disabled={activeIndex >= filteredItems.length - 1}
                 onClick={() => stepPhoto(1)}
                 type="button"
@@ -249,9 +251,6 @@ export function PortfolioGallery({
                 <FaChevronRight aria-hidden="true" size={20} />
               </button>
             </div>
-            <p className="m-0 min-h-6 text-center text-small text-white/85">
-              {activePhoto.image.caption || activePhoto.title}
-            </p>
           </div>
         )}
       </dialog>
