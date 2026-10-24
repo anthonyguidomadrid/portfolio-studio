@@ -119,7 +119,14 @@ function portfolio_studio_register_photos_route() {
 		'args' => array(
 			'page' => array('type' => 'integer', 'minimum' => 1, 'default' => 1),
 			'per_page' => array('type' => 'integer', 'minimum' => 1, 'maximum' => 100, 'default' => 24),
-			'tag' => array('type' => 'string', 'maxLength' => 200, 'default' => '', 'sanitize_callback' => 'sanitize_title'),
+			'tag' => array(
+				'type' => 'string',
+				'maxLength' => 200,
+				'default' => '',
+				'sanitize_callback' => static function ($value) {
+					return sanitize_title($value);
+				},
+			),
 		),
 	));
 }

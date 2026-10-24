@@ -74,6 +74,22 @@ class Portfolio_Studio_Photos_REST_Test extends WP_UnitTestCase {
 		$this->assertSame('Test portrait', $data['items'][0]['image']['alt']);
 	}
 
+	public function test_omitted_and_empty_tags_return_all_eligible_photos() {
+		$first = $this->photo('Alpha', 0);
+		$second = $this->photo('Beta', 1);
+		wp_set_object_terms($first, 'Editorial', 'portfolio_tag');
+
+		foreach (array(array(), array('tag' => ''), array('tag' => '   ')) as $params) {
+			$response = $this->collection($params);
+			$this->assertSame(200, $response->get_status());
+			$data = $response->get_data();
+			$this->assertSame(array($first, $second), array_column($data['items'], 'id'));
+			$this->assertSame(2, $data['total']);
+			$this->assertSame(1, $data['totalPages']);
+			$this->assertSame(1, $data['page']);
+		}
+	}
+
 	public function test_filters_before_pagination_and_returns_collection_tags() {
 		$first = $this->photo('Alpha', 0);
 		$second = $this->photo('Beta', 1);
@@ -82,7 +98,7 @@ class Portfolio_Studio_Photos_REST_Test extends WP_UnitTestCase {
 		wp_set_object_terms($third, 'Editorial', 'portfolio_tag');
 		wp_set_object_terms($second, 'Commercial', 'portfolio_tag');
 
-		$response = $this->collection(array('tag' => 'editorial', 'per_page' => 1, 'page' => 2));
+		$response = $this->collection(array('tag' => 'Editorial', 'per_page' => 1, 'page' => 2));
 		$data = $response->get_data();
 		$this->assertSame(array($third), array_column($data['items'], 'id'));
 		$this->assertSame(2, $data['total']);

@@ -23,7 +23,9 @@ Parameters:
 - `page`: integer >= 1, default 1.
 - `per_page`: integer 1-100, default 24.
 - `tag`: optional string <= 200 characters, sanitized as a slug. Matches a
-  `portfolio_tag` slug; unknown tags produce an empty collection.
+  `portfolio_tag` slug; unknown tags produce an empty collection. Omitting `tag`
+  or providing an empty or whitespace-only value returns all eligible photos.
+  `tag=all` matches the literal `all` tag; it is not an unfiltered alias.
 
 Items are published, non-password-protected posts with a valid image cover and
 positive image dimensions. Draft/private/trashed items and missing images are
