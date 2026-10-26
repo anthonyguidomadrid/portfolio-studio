@@ -1,4 +1,10 @@
 export const messages = {
+  notFound: {
+    code: "404",
+    title: "Page not found.",
+    subtitle: "The page you're looking for may have moved or no longer exists.",
+    home: "Back to home",
+  },
   navigation: {
     labels: {
       home: "Home",

@@ -2,12 +2,20 @@ import { getYouTubeVideoId } from "@/lib/youtube";
 
 const MAX_VIDEO_START_SECONDS = 43200;
 
+export interface NotFoundBackgroundImage {
+  id: number;
+  url: string;
+  width: number;
+  height: number;
+}
+
 export interface SiteConfig {
   name: string;
   description: string;
   contactEmail: string;
   homeVideoId: string;
   homeVideoStart: number;
+  notFoundBackgroundImage?: NotFoundBackgroundImage | null;
   socialLinks: { label: string; href: string }[];
   socialUrls: SocialUrls;
   navigation: typeof navigationItems;
@@ -45,6 +53,7 @@ const previewSiteConfig: SiteConfig = {
   contactEmail: "hello@example.com",
   homeVideoId: "",
   homeVideoStart: 0,
+  notFoundBackgroundImage: null,
   socialLinks: [],
   socialUrls: {
     instagram: "",
@@ -74,6 +83,35 @@ function validExternalUrl(value: unknown): string | undefined {
 function normalizeVideoStart(value: unknown): number {
   if (typeof value !== "number" || !Number.isFinite(value)) return 0;
   return Math.min(Math.max(Math.floor(value), 0), MAX_VIDEO_START_SECONDS);
+}
+
+function normalizeNotFoundImage(value: unknown): NotFoundBackgroundImage | null {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return null;
+  const image = value as Record<string, unknown>;
+  if (
+    !Number.isSafeInteger(image.id) || (image.id as number) < 1 ||
+    !Number.isSafeInteger(image.width) || (image.width as number) < 1 ||
+    !Number.isSafeInteger(image.height) || (image.height as number) < 1 ||
+    typeof image.url !== "string"
+  ) return null;
+
+  try {
+    const url = new URL(image.url);
+    const cms = new URL(process.env.CMS_URL!.trim());
+    if (
+      !["http:", "https:"].includes(url.protocol) ||
+      url.origin !== cms.origin || url.username || url.password ||
+      !url.pathname.startsWith("/wp-content/uploads/")
+    ) return null;
+    return {
+      id: image.id as number,
+      url: url.toString(),
+      width: image.width as number,
+      height: image.height as number,
+    };
+  } catch {
+    return null;
+  }
 }
 
 function normalizeSiteConfig(value: unknown): SiteConfig | undefined {
@@ -116,6 +154,7 @@ function normalizeSiteConfig(value: unknown): SiteConfig | undefined {
         : "",
     homeVideoId: getYouTubeVideoId(fields.homeVideoUrl) ?? "",
     homeVideoStart: normalizeVideoStart(fields.homeVideoStart),
+    notFoundBackgroundImage: normalizeNotFoundImage(fields.notFoundBackgroundImage),
     socialLinks,
     socialUrls,
   };

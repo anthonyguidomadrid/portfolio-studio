@@ -14,6 +14,7 @@ if (!defined('ABSPATH')) {
 
 require_once __DIR__ . '/portfolio-photos.php';
 require_once __DIR__ . '/headless-routing.php';
+require_once __DIR__ . '/not-found-settings.php';
 
 function portfolio_studio_can_edit_meta($allowed, $meta_key, $post_id) {
 	return current_user_can('edit_post', $post_id);
@@ -46,6 +47,7 @@ function portfolio_studio_default_site_settings() {
 		'flickr_url' => '',
 		'home_video_url' => '',
 		'home_video_start' => 0,
+		'not_found_background_image_id' => 0,
 		'social_links' => array(),
 	);
 }
@@ -126,6 +128,7 @@ function portfolio_studio_sanitize_site_settings($input) {
 		'flickr_url' => portfolio_studio_sanitize_social_url($input['flickr_url'] ?? ''),
 		'home_video_url' => portfolio_studio_sanitize_youtube_video_url($input['home_video_url'] ?? ''),
 		'home_video_start' => portfolio_studio_sanitize_video_start($input['home_video_start'] ?? 0),
+		'not_found_background_image_id' => portfolio_studio_sanitize_not_found_image_id($input['not_found_background_image_id'] ?? 0),
 		'social_links' => $social_links,
 	);
 }
@@ -189,6 +192,7 @@ function portfolio_studio_render_settings_page() {
 					</td>
 				</tr>
 				<?php
+				portfolio_studio_render_not_found_image_setting($settings);
 				$social_platforms = array(
 					'instagram' => __('Instagram URL', 'portfolio-studio'),
 					'facebook' => __('Facebook URL', 'portfolio-studio'),
@@ -234,6 +238,7 @@ function portfolio_studio_get_public_site_settings() {
 		'flickrUrl' => $settings['flickr_url'],
 		'homeVideoUrl' => $settings['home_video_url'],
 		'homeVideoStart' => (int) $settings['home_video_start'],
+		'notFoundBackgroundImage' => portfolio_studio_public_not_found_image($settings['not_found_background_image_id']),
 	));
 }
 
@@ -384,7 +389,8 @@ function portfolio_studio_render_meta_box($post) {
 
 function portfolio_studio_enqueue_admin_assets($hook) {
 	$screen = get_current_screen();
-	if (!$screen || 'portfolio_item' !== $screen->post_type || !in_array($hook, array('post.php', 'post-new.php'), true)) {
+	$is_settings = 'settings_page_portfolio-studio-settings' === $hook && current_user_can('manage_options');
+	if (!$is_settings && (!$screen || 'portfolio_item' !== $screen->post_type || !in_array($hook, array('post.php', 'post-new.php'), true))) {
 		return;
 	}
 
@@ -393,7 +399,7 @@ function portfolio_studio_enqueue_admin_assets($hook) {
 		'portfolio-studio-admin',
 		plugin_dir_url(__FILE__) . 'assets/portfolio-admin.js',
 		array('wp-i18n', 'media-editor'),
-		'1.0.0',
+		'1.1.0',
 		true
 	);
 }

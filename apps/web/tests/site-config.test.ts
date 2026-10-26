@@ -7,6 +7,7 @@ const previewConfig = {
   contactEmail: "hello@example.com",
   homeVideoId: "",
   homeVideoStart: 0,
+  notFoundBackgroundImage: null,
   socialLinks: [],
   socialUrls: {
     instagram: "",
@@ -74,6 +75,7 @@ describe("getSiteConfig", () => {
       contactEmail: "hello@studio.example",
       homeVideoId: "dQw4w9WgXcQ",
       homeVideoStart: 90,
+      notFoundBackgroundImage: null,
       socialLinks: [{ label: "Work", href: "https://example.test/work" }],
       socialUrls: {
         instagram: "https://instagram.com/example",
@@ -93,6 +95,27 @@ describe("getSiteConfig", () => {
         next: { revalidate: 3600, tags: ["site-settings"] },
       }),
     );
+  });
+
+  it("accepts a valid public CMS 404 background", async () => {
+    vi.stubEnv("CMS_URL", "https://cms.example.test/");
+    const image = { id: 201, url: "https://cms.example.test/wp-content/uploads/background.jpg", width: 1600, height: 1000 };
+    vi.stubGlobal("fetch", vi.fn<typeof fetch>().mockResolvedValue(response({ name: "Studio", notFoundBackgroundImage: image })));
+    await expect(getSiteConfig()).resolves.toMatchObject({ notFoundBackgroundImage: image });
+  });
+
+  it.each([
+    undefined, null, {}, [],
+    { id: 1, url: "https://external.example.test/wp-content/uploads/a.jpg", width: 800, height: 600 },
+    { id: 1, url: "https://cms.example.test/private/a.jpg", width: 800, height: 600 },
+    { id: 1, url: "https://user:password@cms.example.test/wp-content/uploads/a.jpg", width: 800, height: 600 },
+    { id: 1, url: "javascript:alert(1)", width: 800, height: 600 },
+    { id: 1, url: "https://cms.example.test/wp-content/uploads/a.jpg", width: 0, height: 600 },
+    { id: "1", url: "https://cms.example.test/wp-content/uploads/a.jpg", width: 800, height: 600 },
+  ])("ignores invalid or missing 404 image %p without losing site settings", async (image) => {
+    vi.stubEnv("CMS_URL", "https://cms.example.test");
+    vi.stubGlobal("fetch", vi.fn<typeof fetch>().mockResolvedValue(response({ name: "Studio", notFoundBackgroundImage: image })));
+    await expect(getSiteConfig()).resolves.toMatchObject({ name: "Studio", notFoundBackgroundImage: null });
   });
 
   it.each([

@@ -79,12 +79,12 @@ describe("POST /api/revalidate", () => {
     expect(revalidatePath).not.toHaveBeenCalled();
   });
 
-  it("still refreshes site settings and Home", async () => {
+  it("refreshes site settings and the root layout including the 404", async () => {
     const response = await POST(request({ type: "site_settings" }));
 
     expect(response.status).toBe(200);
     expect(revalidateTag).toHaveBeenCalledWith("site-settings", "max");
-    expect(revalidatePath).toHaveBeenCalledWith("/");
+    expect(revalidatePath).toHaveBeenCalledWith("/", "layout");
   });
 
   it("refreshes the cached portfolio collection only for the collection event", async () => {

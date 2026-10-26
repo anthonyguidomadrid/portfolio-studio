@@ -54,7 +54,7 @@ export async function POST(request: Request) {
 
   if (event.type === "site_settings") {
     revalidateTag("site-settings", "max");
-    revalidatePath("/");
+    revalidatePath("/", "layout");
     return NextResponse.json({
       revalidated: true,
       paths: ["/"],

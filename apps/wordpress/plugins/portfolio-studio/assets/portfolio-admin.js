@@ -3,6 +3,13 @@
   const galleryInput = document.querySelector("#portfolio_gallery_image_ids");
   const coverPreview = document.querySelector("#portfolio-cover-preview");
   const galleryPreview = document.querySelector("#portfolio-gallery-preview");
+  const notFoundInput = document.querySelector("#portfolio-not-found-image-id");
+  const notFoundPreview = document.querySelector("#portfolio-not-found-image-preview");
+
+  document.querySelector("#portfolio-not-found-image-remove")?.addEventListener("click", () => {
+    notFoundInput.value = "0";
+    notFoundPreview.replaceChildren();
+  });
 
   document.querySelectorAll("[data-portfolio-media]").forEach((button) => {
     button.addEventListener("click", (event) => {
@@ -10,7 +17,9 @@
       const mode = button.dataset.portfolioMedia;
       const frame = window.wp.media({
         title:
-          mode === "cover" ? "Choose a cover image" : "Choose gallery images",
+          mode === "not-found"
+            ? "Choose a 404 background image"
+            : mode === "cover" ? "Choose a cover image" : "Choose gallery images",
         button: { text: "Use selected images" },
         library: { type: "image" },
         multiple: mode === "gallery",
@@ -18,6 +27,17 @@
 
       frame.on("select", () => {
         const selection = frame.state().get("selection").toJSON();
+
+        if (mode === "not-found" && selection[0]) {
+          const image = selection[0];
+          notFoundInput.value = image.id;
+          const preview = document.createElement("img");
+          preview.src = image.sizes?.medium?.url || image.url;
+          preview.alt = "";
+          preview.style.maxWidth = "300px";
+          preview.style.height = "auto";
+          notFoundPreview.replaceChildren(preview);
+        }
 
         if (mode === "cover" && selection[0]) {
           const image = selection[0];
