@@ -8,7 +8,14 @@ import { NotFoundView } from "@/components/not-found-view";
 import { messages } from "@/messages/en";
 
 vi.mock("next/image", () => ({
-  default: ({ fill, preload, ...props }: ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean; preload?: boolean }) => {
+  default: ({
+    fill,
+    preload,
+    ...props
+  }: ImgHTMLAttributes<HTMLImageElement> & {
+    fill?: boolean;
+    preload?: boolean;
+  }) => {
     void fill;
     void preload;
     // eslint-disable-next-line @next/next/no-img-element
@@ -18,11 +25,16 @@ vi.mock("next/image", () => ({
 
 const { getSiteConfig } = vi.hoisted(() => ({ getSiteConfig: vi.fn() }));
 vi.mock("@/lib/site-config", async (importOriginal) => ({
-  ...await importOriginal<typeof import("@/lib/site-config")>(),
+  ...(await importOriginal<typeof import("@/lib/site-config")>()),
   getSiteConfig,
 }));
 
-const image = { id: 201, url: "https://cms.example.test/wp-content/uploads/background.jpg", width: 1600, height: 1000 };
+const image = {
+  id: 201,
+  url: "https://cms.example.test/wp-content/uploads/background.jpg",
+  width: 1600,
+  height: 1000,
+};
 
 afterEach(() => {
   cleanup();
@@ -34,8 +46,12 @@ describe("custom 404", () => {
     getSiteConfig.mockResolvedValue({ notFoundBackgroundImage: image });
     const { default: NotFound } = await import("@/app/not-found");
     const { container } = render(await NotFound());
-    expect(screen.getByRole("main").getAttribute("aria-labelledby")).toBe("not-found-title");
-    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(messages.notFound.title);
+    expect(screen.getByRole("main").getAttribute("aria-labelledby")).toBe(
+      "not-found-title",
+    );
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(
+      messages.notFound.title,
+    );
     expect(screen.queryByText(messages.notFound.code)).toBeNull();
     expect(screen.getByText(messages.notFound.subtitle)).toBeTruthy();
     expect(container.querySelector("img")?.getAttribute("src")).toBe(image.url);
@@ -43,21 +59,30 @@ describe("custom 404", () => {
     expect(screen.queryByRole("img")).toBeNull();
   });
 
-  it.each([undefined, null])("renders without a background for missing/null CMS images", async (value) => {
-    getSiteConfig.mockResolvedValue({ notFoundBackgroundImage: value });
-    const { default: NotFound } = await import("@/app/not-found");
-    const { container } = render(await NotFound());
-    expect(container.querySelector("img")).toBeNull();
-    expect(screen.getByRole("main").className).toContain("bg-primary");
-    expect(screen.getByRole("link", { name: messages.notFound.home }).getAttribute("href")).toBe("/");
-  });
+  it.each([undefined, null])(
+    "renders without a background for missing/null CMS images",
+    async (value) => {
+      getSiteConfig.mockResolvedValue({ notFoundBackgroundImage: value });
+      const { default: NotFound } = await import("@/app/not-found");
+      const { container } = render(await NotFound());
+      expect(container.querySelector("img")).toBeNull();
+      expect(screen.getByRole("main").className).toContain("bg-primary");
+      expect(
+        screen
+          .getByRole("link", { name: messages.notFound.home })
+          .getAttribute("href"),
+      ).toBe("/");
+    },
+  );
 
   it("keeps the content and home action available if the image fails", () => {
     const { container } = render(<NotFoundView image={image} />);
     fireEvent.error(container.querySelector("img")!);
     expect(container.querySelector("img")).toBeNull();
     expect(screen.getByRole("heading", { level: 1 })).toBeTruthy();
-    expect(screen.getByRole("link", { name: messages.notFound.home })).toBeTruthy();
+    expect(
+      screen.getByRole("link", { name: messages.notFound.home }),
+    ).toBeTruthy();
   });
 
   it("offers a keyboard and pointer accessible home link", async () => {

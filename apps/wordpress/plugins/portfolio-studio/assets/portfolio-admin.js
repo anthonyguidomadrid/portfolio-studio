@@ -4,12 +4,16 @@
   const coverPreview = document.querySelector("#portfolio-cover-preview");
   const galleryPreview = document.querySelector("#portfolio-gallery-preview");
   const notFoundInput = document.querySelector("#portfolio-not-found-image-id");
-  const notFoundPreview = document.querySelector("#portfolio-not-found-image-preview");
+  const notFoundPreview = document.querySelector(
+    "#portfolio-not-found-image-preview",
+  );
 
-  document.querySelector("#portfolio-not-found-image-remove")?.addEventListener("click", () => {
-    notFoundInput.value = "0";
-    notFoundPreview.replaceChildren();
-  });
+  document
+    .querySelector("#portfolio-not-found-image-remove")
+    ?.addEventListener("click", () => {
+      notFoundInput.value = "0";
+      notFoundPreview.replaceChildren();
+    });
 
   document.querySelectorAll("[data-portfolio-media]").forEach((button) => {
     button.addEventListener("click", (event) => {
@@ -19,7 +23,9 @@
         title:
           mode === "not-found"
             ? "Choose a 404 background image"
-            : mode === "cover" ? "Choose a cover image" : "Choose gallery images",
+            : mode === "cover"
+              ? "Choose a cover image"
+              : "Choose gallery images",
         button: { text: "Use selected images" },
         library: { type: "image" },
         multiple: mode === "gallery",

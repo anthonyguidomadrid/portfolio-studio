@@ -85,24 +85,34 @@ function normalizeVideoStart(value: unknown): number {
   return Math.min(Math.max(Math.floor(value), 0), MAX_VIDEO_START_SECONDS);
 }
 
-function normalizeNotFoundImage(value: unknown): NotFoundBackgroundImage | null {
-  if (typeof value !== "object" || value === null || Array.isArray(value)) return null;
+function normalizeNotFoundImage(
+  value: unknown,
+): NotFoundBackgroundImage | null {
+  if (typeof value !== "object" || value === null || Array.isArray(value))
+    return null;
   const image = value as Record<string, unknown>;
   if (
-    !Number.isSafeInteger(image.id) || (image.id as number) < 1 ||
-    !Number.isSafeInteger(image.width) || (image.width as number) < 1 ||
-    !Number.isSafeInteger(image.height) || (image.height as number) < 1 ||
+    !Number.isSafeInteger(image.id) ||
+    (image.id as number) < 1 ||
+    !Number.isSafeInteger(image.width) ||
+    (image.width as number) < 1 ||
+    !Number.isSafeInteger(image.height) ||
+    (image.height as number) < 1 ||
     typeof image.url !== "string"
-  ) return null;
+  )
+    return null;
 
   try {
     const url = new URL(image.url);
     const cms = new URL(process.env.CMS_URL!.trim());
     if (
       !["http:", "https:"].includes(url.protocol) ||
-      url.origin !== cms.origin || url.username || url.password ||
+      url.origin !== cms.origin ||
+      url.username ||
+      url.password ||
       !url.pathname.startsWith("/wp-content/uploads/")
-    ) return null;
+    )
+      return null;
     return {
       id: image.id as number,
       url: url.toString(),
@@ -154,7 +164,9 @@ function normalizeSiteConfig(value: unknown): SiteConfig | undefined {
         : "",
     homeVideoId: getYouTubeVideoId(fields.homeVideoUrl) ?? "",
     homeVideoStart: normalizeVideoStart(fields.homeVideoStart),
-    notFoundBackgroundImage: normalizeNotFoundImage(fields.notFoundBackgroundImage),
+    notFoundBackgroundImage: normalizeNotFoundImage(
+      fields.notFoundBackgroundImage,
+    ),
     socialLinks,
     socialUrls,
   };
