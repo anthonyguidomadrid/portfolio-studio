@@ -1,3 +1,5 @@
+import { messages } from "@/messages/en";
+
 export function ThemePreview() {
   return (
     <section
@@ -6,13 +8,13 @@ export function ThemePreview() {
     >
       <header className="space-y-3">
         <p className="text-small font-medium uppercase text-muted-foreground">
-          Development theme preview
+          {messages.themePreview.eyebrow}
         </p>
         <h2 id="theme-preview-title" className="text-heading-2">
-          Typography and controls
+          {messages.themePreview.title}
         </h2>
         <p className="max-w-prose text-body text-muted-foreground">
-          Preview of the semantic theme tokens used by the application.
+          {messages.themePreview.description}
         </p>
       </header>
 
@@ -21,33 +23,35 @@ export function ThemePreview() {
           className="text-foreground underline decoration-border underline-offset-4 focus-visible:outline-ring"
           href="#theme-preview-title"
         >
-          Text link
+          {messages.themePreview.link}
         </a>
         <button
           className="rounded-control bg-primary px-5 py-3 text-small font-medium text-primary-foreground"
           type="button"
         >
-          Primary action
+          {messages.themePreview.primaryAction}
         </button>
         <button
           className="rounded-control border border-border bg-surface px-5 py-3 text-small font-medium text-surface-foreground"
           type="button"
         >
-          Secondary action
+          {messages.themePreview.secondaryAction}
         </button>
       </div>
 
       <div className="rounded-panel border border-border bg-surface p-6 text-surface-foreground">
-        <h3 className="text-heading-3">Surface and border</h3>
+        <h3 className="text-heading-3">{messages.themePreview.surfaceTitle}</h3>
         <p className="mt-3 text-body text-muted-foreground">
-          Supporting text uses the muted foreground token on a white surface.
+          {messages.themePreview.surfaceDescription}
         </p>
       </div>
 
       <div className="rounded-panel bg-primary p-6 text-primary-foreground">
-        <h3 className="text-heading-3">Inverted section</h3>
+        <h3 className="text-heading-3">
+          {messages.themePreview.invertedTitle}
+        </h3>
         <p className="mt-3 text-body text-primary-foreground/80">
-          Black sections use the primary surface and its accessible foreground.
+          {messages.themePreview.invertedDescription}
         </p>
       </div>
     </section>

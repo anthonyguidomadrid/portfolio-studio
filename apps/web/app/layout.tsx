@@ -4,6 +4,10 @@ import "./globals.css";
 import { absoluteUrl, getSiteConfig } from "@/lib/site-config";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { Suspense } from "react";
+import { ConsentProvider } from "@/components/consent/provider";
+import { ConsentInterface } from "@/components/consent/interface";
+import { Analytics } from "@/components/consent/analytics";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -44,9 +48,15 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
     >
       <body className="flex min-h-screen flex-col bg-background font-sans text-body text-foreground antialiased">
-        <Header />
-        {children}
-        <Footer />
+        <ConsentProvider>
+          <Header />
+          {children}
+          <Footer />
+          <ConsentInterface />
+          <Suspense fallback={null}>
+            <Analytics />
+          </Suspense>
+        </ConsentProvider>
       </body>
     </html>
   );

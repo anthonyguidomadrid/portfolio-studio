@@ -1,4 +1,5 @@
 import type { SiteConfig } from "@/lib/site-config";
+import { messages } from "@/messages/en";
 
 interface ComingSoonPageProps {
   eyebrow: string;
@@ -28,7 +29,7 @@ export function ComingSoonPage({
             {siteConfig.description}
           </p>
           <p className="mt-6 text-small font-medium uppercase tracking-wide text-muted-foreground">
-            Coming soon.
+            {messages.pages.comingSoon}
           </p>
         </div>
       </section>

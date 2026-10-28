@@ -1,5 +1,5 @@
-import { HomeVideo } from "@/components/home-video";
 import type { SiteConfig } from "@/lib/site-config";
+import { HomeVideo } from "@/components/home-video";
 import { messages } from "@/messages/en";
 
 interface HomeHeroProps {

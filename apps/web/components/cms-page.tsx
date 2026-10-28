@@ -4,6 +4,8 @@ import { messages } from "@/messages/en";
 import { BookingCta } from "@/components/booking-cta";
 import { SocialLinks } from "@/components/footer";
 import type { SocialUrls } from "@/lib/site-config";
+import { getYouTubeVideoId, isYouTubeResource } from "@/lib/youtube";
+import { YouTubeVideo } from "@/components/youtube-video";
 
 interface CmsPageProps {
   title: string;
@@ -47,6 +49,34 @@ export function CmsPage({
           <div className={`cms-page-content ${contentClasses}`}>
             {parse(html, {
               replace: (node) => {
+                if (node instanceof Element && node.name === "iframe") {
+                  const videoId = getYouTubeVideoId(node.attribs.src);
+                  if (!videoId) return <></>;
+                  const width = Number(node.attribs.width);
+                  const height = Number(node.attribs.height);
+                  const source = new URL(node.attribs.src);
+                  const startSeconds = Number(source.searchParams.get("start"));
+                  return (
+                    <YouTubeVideo
+                      videoId={videoId}
+                      title={node.attribs.title || messages.youtube.title}
+                      aspectRatio={
+                        width > 0 && height > 0
+                          ? `${width} / ${height}`
+                          : "16 / 9"
+                      }
+                      startSeconds={
+                        Number.isFinite(startSeconds) ? startSeconds : 0
+                      }
+                    />
+                  );
+                }
+                if (
+                  node instanceof Element &&
+                  node.name === "img" &&
+                  isYouTubeResource(node.attribs.src ?? "")
+                )
+                  return <></>;
                 if (
                   contactSocialUrls &&
                   node instanceof Element &&

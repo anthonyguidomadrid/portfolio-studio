@@ -4,6 +4,7 @@ export const CMS_PAGE_SLUGS = [
   "contact",
   "portfolio",
   "videos",
+  "legal",
 ] as const;
 
 export type CmsPageSlug = (typeof CMS_PAGE_SLUGS)[number];

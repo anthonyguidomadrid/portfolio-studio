@@ -155,7 +155,7 @@ export function PortfolioGallery({
       </section>
 
       <p aria-live="polite" className="sr-only" role="status">
-        {filteredItems.length} {messages.portfolio.photosCount}
+        {messages.portfolio.photosCountLabel(filteredItems.length)}
       </p>
 
       {filteredItems.length === 0 ? (
@@ -174,7 +174,9 @@ export function PortfolioGallery({
             return (
               <li className="min-w-0" key={photo.id}>
                 <button
-                  aria-label={`${messages.portfolio.openPhoto}: ${accessibleLabel || messages.portfolio.openPhoto}`}
+                  aria-label={messages.portfolio.openPhotoLabel(
+                    accessibleLabel,
+                  )}
                   className="group block w-full overflow-hidden bg-muted-surface text-left focus-visible:outline-3 focus-visible:outline-ring"
                   onClick={(event) => openPhoto(photo, event.currentTarget)}
                   type="button"

@@ -10,15 +10,32 @@ import {
 } from "react-icons/fa6";
 import { getSiteConfig, type SiteConfig } from "@/lib/site-config";
 import { messages } from "@/messages/en";
+import { CookieSettingsButton } from "@/components/consent/interface";
 
 const socialPlatforms = [
-  { key: "instagram", label: "Instagram", Icon: FaInstagram },
-  { key: "facebook", label: "Facebook", Icon: FaFacebookF },
-  { key: "twitter", label: "X (Twitter)", Icon: FaXTwitter },
-  { key: "youtube", label: "YouTube", Icon: FaYoutube },
-  { key: "pinterest", label: "Pinterest", Icon: FaPinterestP },
-  { key: "tumblr", label: "Tumblr", Icon: FaTumblr },
-  { key: "flickr", label: "Flickr", Icon: FaFlickr },
+  {
+    key: "instagram",
+    label: messages.footer.platforms.instagram,
+    Icon: FaInstagram,
+  },
+  {
+    key: "facebook",
+    label: messages.footer.platforms.facebook,
+    Icon: FaFacebookF,
+  },
+  {
+    key: "twitter",
+    label: messages.footer.platforms.twitter,
+    Icon: FaXTwitter,
+  },
+  { key: "youtube", label: messages.footer.platforms.youtube, Icon: FaYoutube },
+  {
+    key: "pinterest",
+    label: messages.footer.platforms.pinterest,
+    Icon: FaPinterestP,
+  },
+  { key: "tumblr", label: messages.footer.platforms.tumblr, Icon: FaTumblr },
+  { key: "flickr", label: messages.footer.platforms.flickr, Icon: FaFlickr },
 ] as const;
 
 type SiteFooterProps = Pick<SiteConfig, "name" | "contactEmail" | "socialUrls">;
@@ -83,7 +100,7 @@ export function SiteFooter({
         <div className="flex w-full min-w-0 flex-row items-center justify-center gap-1 sm:w-auto sm:gap-4">
           {contactEmail && (
             <a
-              aria-label={`${messages.footer.emailLinkLabel} ${contactEmail}`}
+              aria-label={messages.footer.emailAddressLabel(contactEmail)}
               className="flex h-11 w-8 shrink-0 items-center justify-center text-foreground transition-colors hover:text-muted-foreground motion-reduce:transition-none sm:size-11"
               href={`mailto:${contactEmail}`}
               title={messages.footer.emailLinkLabel}
@@ -102,9 +119,12 @@ export function SiteFooter({
           <SocialLinks socialUrls={socialUrls} />
         </div>
 
-        <p className="m-0 text-center text-small text-muted-foreground sm:text-right">
-          © {new Date().getFullYear()} {name}
-        </p>
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-muted-foreground sm:ml-auto sm:justify-end">
+          <CookieSettingsButton />
+          <p className="m-0 text-center text-small sm:text-right">
+            {messages.footer.copyright(new Date().getFullYear(), name)}
+          </p>
+        </div>
       </div>
     </footer>
   );

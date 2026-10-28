@@ -1,6 +1,27 @@
 const VIDEO_ID = /^[A-Za-z0-9_-]{11}$/;
 const YOUTUBE_HOSTS = new Set(["youtube.com", "youtube-nocookie.com"]);
 
+const LOCAL_VIDEO_COVERS: Record<string, string> = {};
+
+export function youTubeCover(videoId: string): string {
+  return LOCAL_VIDEO_COVERS[videoId] ?? "/video-covers/default.svg";
+}
+
+export function isYouTubeResource(value: string): boolean {
+  try {
+    const host = new URL(value, "https://local.invalid").hostname;
+    return [
+      "youtube.com",
+      "youtube-nocookie.com",
+      "ytimg.com",
+      "googlevideo.com",
+      "ggpht.com",
+    ].some((domain) => host === domain || host.endsWith(`.${domain}`));
+  } catch {
+    return false;
+  }
+}
+
 export function getYouTubeVideoId(value: unknown): string | undefined {
   if (typeof value !== "string") return undefined;
 

@@ -84,6 +84,15 @@ describe("SiteFooter integration", () => {
     expect(
       screen.getByText(`© ${new Date().getFullYear()} Studio Example`),
     ).toBeTruthy();
+    const cookieSettings = screen.getByRole("button", {
+      name: "Cookie Settings",
+    });
+    expect(cookieSettings.className).not.toContain("underline");
+    expect(cookieSettings.parentElement).toBe(
+      screen.getByText(`© ${new Date().getFullYear()} Studio Example`)
+        .parentElement,
+    );
+    expect(cookieSettings.parentElement?.className).toContain("sm:ml-auto");
   });
 
   it("omits social navigation and email when every optional URL is empty", () => {

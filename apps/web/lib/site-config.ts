@@ -1,4 +1,5 @@
 import { getYouTubeVideoId } from "@/lib/youtube";
+import { messages } from "@/messages/en";
 
 const MAX_VIDEO_START_SECONDS = 43200;
 
@@ -48,8 +49,8 @@ export const navigationItems = [
 ] as const;
 
 const previewSiteConfig: SiteConfig = {
-  name: "STUDIO PORTFOLIO",
-  description: "A flexible home for selected work.",
+  name: messages.preview.name,
+  description: messages.preview.description,
   contactEmail: "hello@example.com",
   homeVideoId: "",
   homeVideoStart: 0,

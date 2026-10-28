@@ -1,6 +1,14 @@
 // @vitest-environment jsdom
 
-import { act, cleanup, render, screen } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  render as testingRender,
+  screen,
+} from "@testing-library/react";
+import type { ReactNode } from "react";
+import { ConsentProvider } from "@/components/consent/provider";
+import { CONSENT_STORAGE_KEY, createConsent } from "@/lib/consent";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { HomeHero } from "@/components/home-hero";
 import { navigationItems, type SiteConfig } from "@/lib/site-config";
@@ -10,7 +18,15 @@ type Listener = () => void;
 let reducedMotion = false;
 let listeners: Listener[] = [];
 
+function render(children: ReactNode) {
+  return testingRender(<ConsentProvider>{children}</ConsentProvider>);
+}
+
 beforeEach(() => {
+  localStorage.setItem(
+    CONSENT_STORAGE_KEY,
+    JSON.stringify(createConsent({ analytics: false, youtube: true })),
+  );
   reducedMotion = false;
   listeners = [];
   vi.stubGlobal(
@@ -29,6 +45,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  localStorage.clear();
   vi.unstubAllGlobals();
 });
 
@@ -81,22 +98,27 @@ describe("HomeHero", () => {
     ).toContain("from-primary");
   });
 
-  it("plays a decorative muted background video that cannot receive focus", () => {
+  it("plays the muted background without saved consent or a consent prompt", () => {
+    localStorage.clear();
     const { container } = render(
       <HomeHero eyebrow="Portfolio" siteConfig={siteConfig} />,
     );
 
     const frame = container.querySelector("iframe");
-    expect(frame).not.toBeNull();
-    expect(frame?.getAttribute("src")).toContain(
+    expect(frame?.src).toContain(
       "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?",
     );
-    expect(frame?.getAttribute("src")).toContain("mute=1");
-    expect(frame?.getAttribute("src")).toContain("start=45");
+    expect(frame?.src).toContain("autoplay=1");
+    expect(frame?.src).toContain("mute=1");
+    expect(frame?.src).toContain("start=45");
     expect(frame?.getAttribute("aria-hidden")).toBe("true");
     expect(frame?.getAttribute("tabindex")).toBe("-1");
-    expect(frame?.getAttribute("title")).toBe("Background video");
-    expect(frame?.className).toContain("pointer-events-none");
+    expect(
+      screen.queryByRole("button", { name: "Allow YouTube and play" }),
+    ).toBeNull();
+    expect(container.querySelector("main")?.className).not.toContain(
+      "flex-col",
+    );
   });
 
   it("does not render an iframe when there is no valid video ID", () => {
@@ -121,7 +143,7 @@ describe("HomeHero", () => {
     expect(screen.getByRole("heading", { level: 1 })).toBeTruthy();
   });
 
-  it("stops the video when the reduced motion preference turns on", () => {
+  it("stops decorative autoplay when the reduced motion preference turns on", () => {
     const { container } = render(
       <HomeHero eyebrow="Portfolio" siteConfig={siteConfig} />,
     );
