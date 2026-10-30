@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { generateMetadata as aboutMetadata } from "@/app/about/page";
 import { generateMetadata as contactMetadata } from "@/app/contact/page";
-import { metadata as cvMetadata } from "@/app/cv/page";
+import { generateMetadata as legalMetadata } from "@/app/legal/page";
 import { metadata as homeMetadata } from "@/app/page";
 import { generateMetadata as portfolioMetadata } from "@/app/portfolio/page";
 import { generateMetadata as videosMetadata } from "@/app/videos/page";
@@ -31,7 +31,7 @@ describe("page canonical metadata", () => {
       await portfolioMetadata(),
       await videosMetadata(),
       await contactMetadata(),
-      await cvMetadata,
+      await legalMetadata(),
     ];
 
     expect(metadata.map((item) => item.alternates?.canonical)).toEqual([
@@ -40,7 +40,7 @@ describe("page canonical metadata", () => {
       "/portfolio",
       "/videos",
       "/contact",
-      "/cv",
+      "/legal",
     ]);
   });
 });
