@@ -11,7 +11,10 @@ interface PortfolioPageProps {
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage("portfolio");
-  return { title: page?.title ?? messages.pages.portfolio };
+  return {
+    title: page?.title ?? messages.pages.portfolio,
+    alternates: { canonical: "/portfolio" },
+  };
 }
 
 export default async function PortfolioPage({

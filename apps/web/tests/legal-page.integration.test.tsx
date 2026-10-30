@@ -40,7 +40,10 @@ describe("Legal page integration", () => {
 
     const markup = renderToStaticMarkup(await LegalPage());
 
-    expect(await generateMetadata()).toEqual({ title: "Privacy & cookies" });
+    expect(await generateMetadata()).toEqual({
+      title: "Privacy & cookies",
+      alternates: { canonical: "/legal" },
+    });
     expect(markup).toContain('aria-label="Privacy &amp; cookies"');
     expect(markup).toContain("<h1>Our privacy notice</h1>");
     expect(markup).toContain("<p>CMS legal copy.</p>");
@@ -75,6 +78,7 @@ describe("Legal page integration", () => {
 
       expect(await generateMetadata()).toEqual({
         title: "Privacy and cookies",
+        alternates: { canonical: "/legal" },
       });
       expect(markup).toContain('aria-label="Privacy and cookies"');
       expect(markup).toContain("This page is currently unavailable.");
@@ -89,7 +93,10 @@ describe("Legal page integration", () => {
 
     const markup = renderToStaticMarkup(await LegalPage());
 
-    expect(await generateMetadata()).toEqual({ title: "Privacy and cookies" });
+    expect(await generateMetadata()).toEqual({
+      title: "Privacy and cookies",
+      alternates: { canonical: "/legal" },
+    });
     expect(markup).toContain('aria-label="Privacy and cookies"');
     expect(markup).toContain("This page is currently unavailable.");
   });
@@ -101,7 +108,10 @@ describe("Legal page integration", () => {
 
     const markup = renderToStaticMarkup(await LegalPage());
 
-    expect(await generateMetadata()).toEqual({ title: "Privacy and cookies" });
+    expect(await generateMetadata()).toEqual({
+      title: "Privacy and cookies",
+      alternates: { canonical: "/legal" },
+    });
     expect(markup).toContain("This page is currently unavailable.");
     expect(fetchMock).not.toHaveBeenCalled();
   });

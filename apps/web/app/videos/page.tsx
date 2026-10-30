@@ -5,7 +5,10 @@ import { messages } from "@/messages/en";
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage("videos");
-  return { title: page?.title ?? messages.pages.videos };
+  return {
+    title: page?.title ?? messages.pages.videos,
+    alternates: { canonical: "/videos" },
+  };
 }
 
 export default async function VideosPage() {

@@ -5,7 +5,10 @@ import { messages } from "@/messages/en";
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage("contact");
-  return { title: page?.title ?? messages.pages.contact };
+  return {
+    title: page?.title ?? messages.pages.contact,
+    alternates: { canonical: "/contact" },
+  };
 }
 
 export default async function ContactPage() {

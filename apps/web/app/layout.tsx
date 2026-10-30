@@ -25,7 +25,6 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${siteConfig.name}`,
     },
     description: siteConfig.description,
-    alternates: { canonical: "/" },
     openGraph: {
       type: "website",
       siteName: siteConfig.name,
