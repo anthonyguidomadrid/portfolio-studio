@@ -177,7 +177,7 @@ export async function getPortfolioCollection(): Promise<PortfolioCollection> {
       const response = await fetch(url, {
         headers: { Accept: "application/json" },
         signal: AbortSignal.timeout(8000),
-        next: { revalidate: 3600, tags: ["wp-portfolio-photos"] },
+        next: { revalidate: false, tags: ["wp-portfolio-photos"] },
       });
       if (!response.ok) {
         throw new Error(`WordPress photos responded with ${response.status}.`);

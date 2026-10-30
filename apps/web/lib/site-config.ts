@@ -183,7 +183,7 @@ export async function getSiteConfig(): Promise<SiteConfig> {
       {
         headers: { Accept: "application/json" },
         signal: AbortSignal.timeout(8000),
-        next: { revalidate: 3600, tags: ["site-settings"] },
+        next: { revalidate: false, tags: ["site-settings"] },
       },
     );
     if (!response.ok)

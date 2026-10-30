@@ -201,7 +201,7 @@ export async function getPage(
     const response = await fetch(url, {
       headers: { Accept: "application/json" },
       signal: AbortSignal.timeout(8000),
-      next: { revalidate: 3600, tags: [cmsPageCacheTag(slug)] },
+      next: { revalidate: false, tags: [cmsPageCacheTag(slug)] },
     });
     if (!response.ok) {
       throw new Error(`WordPress pages responded with ${response.status}.`);

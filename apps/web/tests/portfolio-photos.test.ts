@@ -94,7 +94,7 @@ describe("getPortfolioCollection", () => {
     expect(secondUrl.searchParams.get("page")).toBe("2");
     expect(fetchMock.mock.calls[0][1]).toEqual(
       expect.objectContaining({
-        next: { revalidate: 3600, tags: ["wp-portfolio-photos"] },
+        next: { revalidate: false, tags: ["wp-portfolio-photos"] },
       }),
     );
   });

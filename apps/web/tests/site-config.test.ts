@@ -92,7 +92,7 @@ describe("getSiteConfig", () => {
       "https://cms.example.test/wp-json/portfolio-studio/v1/settings",
       expect.objectContaining({
         headers: { Accept: "application/json" },
-        next: { revalidate: 3600, tags: ["site-settings"] },
+        next: { revalidate: false, tags: ["site-settings"] },
       }),
     );
   });

@@ -211,7 +211,7 @@ describe("getPage", () => {
     expect(requested.searchParams.get("slug")).toBe("about");
     expect(init).toEqual(
       expect.objectContaining({
-        next: { revalidate: 3600, tags: ["wp-page-about"] },
+        next: { revalidate: false, tags: ["wp-page-about"] },
       }),
     );
   });

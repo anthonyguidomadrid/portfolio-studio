@@ -57,7 +57,7 @@ describe("Legal page integration", () => {
       "https://cms.example.test/wp-json/wp/v2/pages?slug=legal&_fields=slug%2Ctitle%2Ccontent",
     );
     expect(options).toMatchObject({
-      next: { revalidate: 3600, tags: ["wp-page-legal"] },
+      next: { revalidate: false, tags: ["wp-page-legal"] },
     });
     expect(isCmsPageSlug("legal")).toBe(true);
     expect(cmsPageCacheTag("legal")).toBe("wp-page-legal");

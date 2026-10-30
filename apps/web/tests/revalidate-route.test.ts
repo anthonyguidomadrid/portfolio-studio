@@ -50,7 +50,7 @@ describe("POST /api/revalidate", () => {
       revalidated: true,
       paths: ["/about"],
     });
-    expect(revalidateTag).toHaveBeenCalledWith("wp-page-about", "max");
+    expect(revalidateTag).toHaveBeenCalledWith("wp-page-about", { expire: 0 });
     expect(revalidatePath).toHaveBeenCalledWith("/about");
   });
 
@@ -62,7 +62,9 @@ describe("POST /api/revalidate", () => {
       revalidated: true,
       paths: ["/portfolio"],
     });
-    expect(revalidateTag).toHaveBeenCalledWith("wp-page-portfolio", "max");
+    expect(revalidateTag).toHaveBeenCalledWith("wp-page-portfolio", {
+      expire: 0,
+    });
     expect(revalidatePath).toHaveBeenCalledWith("/portfolio");
   });
 
@@ -83,7 +85,9 @@ describe("POST /api/revalidate", () => {
     const response = await POST(request({ type: "site_settings" }));
 
     expect(response.status).toBe(200);
-    expect(revalidateTag).toHaveBeenCalledWith("site-settings", "max");
+    expect(revalidateTag).toHaveBeenCalledWith("site-settings", {
+      expire: 0,
+    });
     expect(revalidatePath).toHaveBeenCalledWith("/", "layout");
   });
 
@@ -95,7 +99,9 @@ describe("POST /api/revalidate", () => {
       revalidated: true,
       paths: ["/portfolio"],
     });
-    expect(revalidateTag).toHaveBeenCalledWith("wp-portfolio-photos", "max");
+    expect(revalidateTag).toHaveBeenCalledWith("wp-portfolio-photos", {
+      expire: 0,
+    });
     expect(revalidatePath).toHaveBeenCalledWith("/portfolio");
   });
 

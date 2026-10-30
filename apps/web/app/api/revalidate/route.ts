@@ -44,7 +44,7 @@ export async function POST(request: Request) {
 
   const event = payload as { type?: unknown; slug?: unknown };
   if (event.type === "page" && isCmsPageSlug(event.slug)) {
-    revalidateTag(cmsPageCacheTag(event.slug), "max");
+    revalidateTag(cmsPageCacheTag(event.slug), { expire: 0 });
     revalidatePath(`/${event.slug}`);
     return NextResponse.json({
       revalidated: true,
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
   }
 
   if (event.type === "site_settings") {
-    revalidateTag("site-settings", "max");
+    revalidateTag("site-settings", { expire: 0 });
     revalidatePath("/", "layout");
     return NextResponse.json({
       revalidated: true,
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
   }
 
   if (event.type === "portfolio_item" && event.slug === "") {
-    revalidateTag("wp-portfolio-photos", "max");
+    revalidateTag("wp-portfolio-photos", { expire: 0 });
     revalidatePath("/portfolio");
     return NextResponse.json({
       revalidated: true,
