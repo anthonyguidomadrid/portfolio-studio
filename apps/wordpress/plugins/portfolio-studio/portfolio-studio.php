@@ -16,6 +16,7 @@ require_once __DIR__ . '/portfolio-photos.php';
 require_once __DIR__ . '/headless-routing.php';
 require_once __DIR__ . '/not-found-settings.php';
 require_once __DIR__ . '/page-image-alt.php';
+require_once __DIR__ . '/seo.php';
 
 function portfolio_studio_can_edit_meta($allowed, $meta_key, $post_id) {
 	return current_user_can('edit_post', $post_id);
@@ -240,6 +241,7 @@ function portfolio_studio_get_public_site_settings() {
 		'homeVideoUrl' => $settings['home_video_url'],
 		'homeVideoStart' => (int) $settings['home_video_start'],
 		'notFoundBackgroundImage' => portfolio_studio_public_not_found_image($settings['not_found_background_image_id']),
+		'seo' => portfolio_studio_public_seo_settings(),
 	));
 }
 

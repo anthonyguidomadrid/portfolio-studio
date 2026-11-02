@@ -47,6 +47,7 @@ class Portfolio_Studio_Page_Image_Alt_Test extends WP_UnitTestCase {
 		$post_id = self::factory()->post->create(array('post_type' => 'page', 'post_name' => 'about'));
 		$response = new WP_REST_Response(array('slug' => 'about'));
 		$this->assertSame($response, apply_filters('rest_prepare_page', $response, get_post($post_id)));
-		$this->assertSame(array('slug' => 'about'), $response->get_data());
+		$this->assertSame('about', $response->get_data()['slug']);
+		$this->assertArrayNotHasKey('content', $response->get_data());
 	}
 }

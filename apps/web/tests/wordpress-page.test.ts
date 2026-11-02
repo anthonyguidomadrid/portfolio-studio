@@ -177,19 +177,27 @@ describe("getPage", () => {
     "preserves image alt text through normalization for %s",
     async (slug) => {
       vi.stubEnv("CMS_URL", "https://cms.example.test");
-      vi.stubGlobal("fetch", vi.fn<typeof fetch>().mockResolvedValue(json([
-        {
-          slug,
-          title: { rendered: slug },
-          content: {
-            rendered: '<figure><img class="wp-image-22" src="https://cms.example.test/wp-content/uploads/portrait.jpg" alt="Portrait with soft light &amp; a grey background"></figure>',
-          },
-        },
-      ])));
+      vi.stubGlobal(
+        "fetch",
+        vi.fn<typeof fetch>().mockResolvedValue(
+          json([
+            {
+              slug,
+              title: { rendered: slug },
+              content: {
+                rendered:
+                  '<figure><img class="wp-image-22" src="https://cms.example.test/wp-content/uploads/portrait.jpg" alt="Portrait with soft light &amp; a grey background"></figure>',
+              },
+            },
+          ]),
+        ),
+      );
 
       const page = await getPage(slug);
 
-      expect(page?.html).toContain('alt="Portrait with soft light &amp; a grey background"');
+      expect(page?.html).toContain(
+        'alt="Portrait with soft light &amp; a grey background"',
+      );
       expect(page?.html).toContain('loading="lazy"');
     },
   );
