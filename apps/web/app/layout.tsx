@@ -25,6 +25,27 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${siteConfig.name}`,
     },
     description: siteConfig.description,
+    applicationName: siteConfig.name,
+    appleWebApp: {
+      title: siteConfig.name,
+      capable: true,
+      statusBarStyle: "default",
+    },
+    icons: {
+      icon: [
+        { url: "/favicon.ico", type: "image/x-icon", sizes: "32x32" },
+        {
+          url: "/favicons/favicon-96x96.png",
+          type: "image/png",
+          sizes: "96x96",
+        },
+        { url: "/favicons/favicon.svg", type: "image/svg+xml", sizes: "any" },
+      ],
+      apple: [
+        { url: "/apple-touch-icon.png", type: "image/png", sizes: "180x180" },
+      ],
+    },
+    manifest: "/manifest.webmanifest",
     openGraph: {
       type: "website",
       siteName: siteConfig.name,

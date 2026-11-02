@@ -1,10 +1,15 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { generateMetadata as rootMetadata } from "@/app/layout";
 import { generateMetadata as aboutMetadata } from "@/app/about/page";
 import { generateMetadata as contactMetadata } from "@/app/contact/page";
 import { generateMetadata as legalMetadata } from "@/app/legal/page";
 import { metadata as homeMetadata } from "@/app/page";
 import { generateMetadata as portfolioMetadata } from "@/app/portfolio/page";
 import { generateMetadata as videosMetadata } from "@/app/videos/page";
+
+vi.mock("next/font/google", () => ({
+  Montserrat: () => ({ variable: "--font-montserrat" }),
+}));
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -42,5 +47,37 @@ describe("page canonical metadata", () => {
       "/contact",
       "/legal",
     ]);
+  });
+
+  it("declares all favicon formats, the touch title, and the manifest", async () => {
+    vi.stubEnv("CMS_URL", "https://cms.example.test");
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(
+          Response.json({ name: "Example Studio", description: "A portfolio" }),
+        ),
+    );
+
+    expect(await rootMetadata()).toMatchObject({
+      applicationName: "Example Studio",
+      appleWebApp: { title: "Example Studio", capable: true },
+      manifest: "/manifest.webmanifest",
+      icons: {
+        icon: [
+          { url: "/favicon.ico", type: "image/x-icon", sizes: "32x32" },
+          {
+            url: "/favicons/favicon-96x96.png",
+            type: "image/png",
+            sizes: "96x96",
+          },
+          { url: "/favicons/favicon.svg", type: "image/svg+xml", sizes: "any" },
+        ],
+        apple: [
+          { url: "/apple-touch-icon.png", type: "image/png", sizes: "180x180" },
+        ],
+      },
+    });
   });
 });
