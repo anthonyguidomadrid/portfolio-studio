@@ -18,10 +18,14 @@ the handler also explicitly excludes REST, admin, AJAX, and cron contexts.
 API routes, public response fields, authentication, and write permissions have
 not changed. This policy is not authentication or protection for private data.
 
-WordPress's virtual `robots.txt` stays accessible and disallows all crawling
-when the frontend URL is configured. A physical robots file or proxy rule can
-override it. Also enable Settings > Reading > Discourage search engines from
-indexing this site. Robots directives are advisory, not access controls.
+WordPress's virtual `robots.txt` stays accessible and disallows crawling except
+for `/wp-content/uploads/` when the frontend URL is configured. This permits
+crawlers to fetch uploaded portfolio images while keeping admin, API, and theme
+paths blocked. The exception permits all files under uploads, not only images.
+A physical robots file or proxy rule can override it. Also enable Settings >
+Reading > Discourage search engines from indexing this site. Robots directives
+are advisory, not access controls, and allowing uploads does not guarantee image
+indexing.
 
 Missing or invalid frontend configuration leaves existing WordPress behavior
 unchanged. URLs containing credentials, query parameters, or fragments are not

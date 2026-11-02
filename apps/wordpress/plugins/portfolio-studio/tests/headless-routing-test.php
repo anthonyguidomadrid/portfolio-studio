@@ -50,10 +50,10 @@ class Portfolio_Studio_Headless_Routing_Test extends WP_UnitTestCase {
 		}
 	}
 
-	public function test_robots_remains_available_and_discourages_indexing() {
+	public function test_robots_remains_available_and_allows_only_uploads() {
 		$this->go_to(home_url('/?robots=1'));
 		$this->assertSame('', portfolio_studio_frontend_redirect_target());
-		$this->assertSame("User-agent: *\nDisallow: /\n", apply_filters('robots_txt', 'original', '1'));
+		$this->assertSame("User-agent: *\nDisallow: /\nAllow: /wp-content/uploads/\n", apply_filters('robots_txt', 'original', '1'));
 		putenv('NEXT_PUBLIC_SITE_URL');
 		$this->assertSame('original', apply_filters('robots_txt', 'original', '1'));
 	}

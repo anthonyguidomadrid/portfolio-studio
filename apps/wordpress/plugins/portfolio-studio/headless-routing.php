@@ -49,6 +49,6 @@ function portfolio_studio_redirect_public_theme() {
 add_action('template_redirect', 'portfolio_studio_redirect_public_theme', 0);
 
 function portfolio_studio_headless_robots($output) {
-	return portfolio_studio_frontend_url() ? "User-agent: *\nDisallow: /\n" : $output;
+	return portfolio_studio_frontend_url() ? "User-agent: *\nDisallow: /\nAllow: /wp-content/uploads/\n" : $output;
 }
 add_filter('robots_txt', 'portfolio_studio_headless_robots');
