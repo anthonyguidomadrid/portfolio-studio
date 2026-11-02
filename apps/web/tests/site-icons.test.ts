@@ -50,6 +50,7 @@ describe("site icons", () => {
     expect(response.headers.get("content-type")).toBe("image/svg+xml");
     const svg = await response.text();
     expect(svg).toContain('viewBox="0 0 32 32"');
+    expect(svg).toContain('font-weight="400"');
     expect(svg).toContain("&#60;&#38;</text>");
   });
 
@@ -67,7 +68,7 @@ describe("site icons", () => {
     await expectPng(await appleIcon(), 180);
   });
 
-  it("serves an ICO directory with an embedded 32 pixel PNG", async () => {
+  it("serves an ICO directory with embedded 16, 32, and 48 pixel PNGs", async () => {
     configureSite();
     const response = await favicon();
     expect(response.headers.get("content-type")).toBe("image/x-icon");
@@ -75,17 +76,29 @@ describe("site icons", () => {
     const header = new DataView(bytes.buffer);
     expect(header.getUint16(0, true)).toBe(0);
     expect(header.getUint16(2, true)).toBe(1);
-    expect(header.getUint16(4, true)).toBe(1);
-    expect([bytes[6], bytes[7]]).toEqual([32, 32]);
-    expect(header.getUint16(12, true)).toBe(32);
-    expect(header.getUint32(14, true)).toBe(bytes.length - 22);
-    expect(header.getUint32(18, true)).toBe(22);
-    await expectPng(
-      new Response(bytes.slice(22), {
-        headers: { "Content-Type": "image/png" },
-      }),
-      32,
-    );
+    expect(header.getUint16(4, true)).toBe(3);
+    let expectedImageOffset = 6 + 3 * 16;
+    for (const [index, size] of [16, 32, 48].entries()) {
+      const entryOffset = 6 + index * 16;
+      expect([bytes[entryOffset], bytes[entryOffset + 1]]).toEqual([
+        size,
+        size,
+      ]);
+      expect(header.getUint16(entryOffset + 4, true)).toBe(1);
+      expect(header.getUint16(entryOffset + 6, true)).toBe(32);
+      const imageLength = header.getUint32(entryOffset + 8, true);
+      const imageOffset = header.getUint32(entryOffset + 12, true);
+      expect(imageLength).toBeGreaterThan(0);
+      expect(imageOffset).toBe(expectedImageOffset);
+      await expectPng(
+        new Response(bytes.slice(imageOffset, imageOffset + imageLength), {
+          headers: { "Content-Type": "image/png" },
+        }),
+        size,
+      );
+      expectedImageOffset += imageLength;
+    }
+    expect(expectedImageOffset).toBe(bytes.length);
   });
 
   it.each(["unknown.png", "toString", "__proto__"])(
