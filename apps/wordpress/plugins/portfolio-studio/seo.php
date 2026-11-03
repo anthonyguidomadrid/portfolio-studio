@@ -52,12 +52,48 @@ function portfolio_studio_public_seo($value) {
 	);
 }
 
+function portfolio_studio_sanitize_person($value) {
+	$value = is_array($value) ? $value : array();
+	return array(
+		'name' => portfolio_studio_sanitize_seo_title($value['name'] ?? ''),
+		'description' => portfolio_studio_sanitize_seo_description($value['description'] ?? ''),
+		'occupation' => is_string($value['occupation'] ?? null) ? wp_html_excerpt(sanitize_text_field($value['occupation']), 120, '') : '',
+		'image_id' => portfolio_studio_sanitize_not_found_image_id($value['image_id'] ?? 0),
+		'image_alt' => portfolio_studio_sanitize_seo_description($value['image_alt'] ?? ''),
+	);
+}
+
+function portfolio_studio_public_person($value) {
+	$value = portfolio_studio_sanitize_person($value);
+	if ('' === $value['name']) {
+		return null;
+	}
+	$site_settings = get_option('portfolio_studio_site_settings', array());
+	$site_settings = is_array($site_settings) ? $site_settings : array();
+	$same_as = array();
+	foreach (array('instagram_url', 'facebook_url', 'twitter_url', 'youtube_url', 'pinterest_url', 'tumblr_url', 'flickr_url') as $key) {
+		$url = $site_settings[$key] ?? '';
+		if (is_string($url) && '' !== $url && wp_http_validate_url($url)) {
+			$same_as[] = esc_url_raw($url, array('http', 'https'));
+		}
+	}
+	$person = array(
+		'name' => $value['name'],
+		'description' => $value['description'],
+		'occupation' => $value['occupation'],
+		'image' => portfolio_studio_public_seo_image($value['image_id'], $value['image_alt']),
+		'sameAs' => array_values(array_unique(array_filter($same_as))),
+	);
+	return $person;
+}
+
 function portfolio_studio_public_seo_settings() {
 	$settings = get_option('portfolio_studio_seo_settings', array());
 	$settings = is_array($settings) ? $settings : array();
 	return array(
 		'home' => portfolio_studio_public_seo($settings['home'] ?? array()),
 		'defaultImage' => portfolio_studio_public_seo_image($settings['default_image_id'] ?? 0, $settings['default_image_alt'] ?? ''),
+		'person' => portfolio_studio_public_person($settings['person'] ?? array()),
 	);
 }
 
@@ -67,6 +103,7 @@ function portfolio_studio_sanitize_seo_settings($value) {
 		'home' => portfolio_studio_sanitize_seo($value['home'] ?? array()),
 		'default_image_id' => portfolio_studio_sanitize_not_found_image_id($value['default_image_id'] ?? 0),
 		'default_image_alt' => portfolio_studio_sanitize_seo_description($value['default_image_alt'] ?? ''),
+		'person' => portfolio_studio_sanitize_person($value['person'] ?? array()),
 	);
 }
 
@@ -204,11 +241,36 @@ function portfolio_studio_render_seo_settings() {
 	settings_fields('portfolio_studio_seo');
 	echo '<h2>' . esc_html__('Home page', 'portfolio-studio') . '</h2>';
 	portfolio_studio_render_seo_fields('portfolio_studio_seo_settings[home]', $settings['home'], 'portfolio-home-seo');
+	echo '<h2>' . esc_html__('Person structured data', 'portfolio-studio') . '</h2>';
+	echo '<p>' . esc_html__('Optional. Person data is published only when a public name is set. Existing social profile URLs are reused as sameAs links.', 'portfolio-studio') . '</p>';
+	portfolio_studio_render_person_fields('portfolio_studio_seo_settings[person]', $settings['person'], 'portfolio-person');
 	echo '<h2>' . esc_html__('Default sharing image', 'portfolio-studio') . '</h2>';
 	portfolio_studio_render_seo_image_picker('portfolio_studio_seo_settings[default_image_id]', $settings['default_image_id'], 'portfolio-default-seo-image');
 	echo '<p><label for="portfolio-default-seo-alt">' . esc_html__('Default sharing image alternative text', 'portfolio-studio') . '</label><br><input class="widefat" id="portfolio-default-seo-alt" name="portfolio_studio_seo_settings[default_image_alt]" maxlength="500" value="' . esc_attr($settings['default_image_alt']) . '"></p>';
 	submit_button();
 	echo '</form></div>';
+}
+
+function portfolio_studio_render_person_fields($prefix, $value, $id_prefix) {
+	$value = portfolio_studio_sanitize_person($value);
+	$fields = array(
+		'name' => array(__('Person name', 'portfolio-studio'), 200),
+		'description' => array(__('Person description', 'portfolio-studio'), 500),
+		'occupation' => array(__('Occupation', 'portfolio-studio'), 120),
+	);
+	foreach ($fields as $field => $definition) {
+		$id = $id_prefix . '-' . $field;
+		echo '<p><label for="' . esc_attr($id) . '"><strong>' . esc_html($definition[0]) . '</strong></label><br>';
+		if ('description' === $field) {
+			echo '<textarea class="widefat" rows="3" id="' . esc_attr($id) . '" name="' . esc_attr($prefix . '[' . $field . ']') . '" maxlength="' . esc_attr((string) $definition[1]) . '">' . esc_textarea($value[$field]) . '</textarea>';
+		} else {
+			echo '<input class="widefat" type="text" id="' . esc_attr($id) . '" name="' . esc_attr($prefix . '[' . $field . ']') . '" maxlength="' . esc_attr((string) $definition[1]) . '" value="' . esc_attr($value[$field]) . '">';
+		}
+		echo '</p>';
+	}
+	portfolio_studio_render_seo_image_picker($prefix . '[image_id]', $value['image_id'], $id_prefix . '-image_id');
+	$id = $id_prefix . '-image_alt';
+	echo '<p><label for="' . esc_attr($id) . '"><strong>' . esc_html__('Portrait alternative text', 'portfolio-studio') . '</strong></label><br><input class="widefat" type="text" id="' . esc_attr($id) . '" name="' . esc_attr($prefix . '[image_alt]') . '" maxlength="500" value="' . esc_attr($value['image_alt']) . '"></p>';
 }
 
 function portfolio_studio_enqueue_seo_assets($hook) {
@@ -245,7 +307,7 @@ function portfolio_studio_seo_related_image_changed($post_id) {
 	$image_ids = array((int) $post_id);
 	$image_ids = array_merge($image_ids, get_posts(array('post_type' => 'attachment', 'post_status' => 'any', 'post_parent' => $post_id, 'fields' => 'ids', 'posts_per_page' => -1)));
 	$settings = get_option('portfolio_studio_seo_settings', array());
-	if (is_array($settings) && (in_array((int) ($settings['default_image_id'] ?? 0), $image_ids, true) || in_array((int) ($settings['home']['image_id'] ?? 0), $image_ids, true))) {
+	if (is_array($settings) && (in_array((int) ($settings['default_image_id'] ?? 0), $image_ids, true) || in_array((int) ($settings['home']['image_id'] ?? 0), $image_ids, true) || in_array((int) ($settings['person']['image_id'] ?? 0), $image_ids, true))) {
 		portfolio_studio_queue_seo_event('site_settings');
 	}
 	$pages = get_posts(array('post_type' => 'page', 'post_status' => 'publish', 'posts_per_page' => -1, 'meta_query' => array(array('key' => '_portfolio_seo_image_id', 'value' => $image_ids, 'compare' => 'IN', 'type' => 'NUMERIC'))));

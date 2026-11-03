@@ -31,7 +31,7 @@ class Portfolio_Studio_SEO_Test extends WP_UnitTestCase {
 	public function test_settings_defaults_and_public_page_projection() {
 		wp_set_current_user(0);
 		$settings = rest_get_server()->dispatch(new WP_REST_Request('GET', '/portfolio-studio/v1/settings'))->get_data();
-		$this->assertSame(array('home' => array('title' => '', 'description' => '', 'image' => null), 'defaultImage' => null), $settings['seo']);
+		$this->assertSame(array('home' => array('title' => '', 'description' => '', 'image' => null), 'defaultImage' => null, 'person' => null), $settings['seo']);
 		$page_id = $this->page();
 		update_post_meta($page_id, '_portfolio_seo_title', 'About the studio');
 		update_post_meta($page_id, '_portfolio_seo_description', 'An editorial description.');
@@ -73,7 +73,72 @@ class Portfolio_Studio_SEO_Test extends WP_UnitTestCase {
 		$this->assertSame($image_id, $settings['home']['image_id']);
 		$this->assertSame($image_id, $settings['default_image_id']);
 		$this->assertSame('Description', $settings['default_image_alt']);
-		$this->assertSame(array('home' => array('title' => '', 'description' => '', 'image_id' => 0, 'image_alt' => ''), 'default_image_id' => 0, 'default_image_alt' => ''), portfolio_studio_sanitize_seo_settings(array()));
+		$this->assertSame(array('home' => array('title' => '', 'description' => '', 'image_id' => 0, 'image_alt' => ''), 'default_image_id' => 0, 'default_image_alt' => '', 'person' => array('name' => '', 'description' => '', 'occupation' => '', 'image_id' => 0, 'image_alt' => '')), portfolio_studio_sanitize_seo_settings(array()));
+	}
+
+	public function test_person_is_optional_sanitized_and_reuses_public_social_profile_urls() {
+		$this->assertNull(portfolio_studio_public_person(array()));
+		$image_id = $this->image();
+		update_option('portfolio_studio_site_settings', array(
+			'instagram_url' => 'https://instagram.com/model',
+			'facebook_url' => 'https://facebook.com/model',
+			'twitter_url' => 'javascript:alert(1)',
+			'youtube_url' => 'https://youtube.com/@model',
+			'pinterest_url' => '',
+			'tumblr_url' => 'https://tumblr.com/model',
+			'flickr_url' => 'https://flickr.com/photos/model',
+		));
+		$person = portfolio_studio_public_person(array(
+			'name' => '  Example Model  ',
+			'description' => '<b>Approved biography</b>',
+			'occupation' => '  Fashion Model  ',
+			'image_id' => $image_id,
+			'image_alt' => '',
+		));
+		$this->assertSame(array(
+			'name' => 'Example Model',
+			'description' => 'Approved biography',
+			'occupation' => 'Fashion Model',
+			'image' => array('id' => $image_id, 'url' => wp_get_attachment_image_src($image_id, 'full')[0], 'width' => 1200, 'height' => 630, 'alt' => 'Media image description'),
+			'sameAs' => array('https://instagram.com/model', 'https://facebook.com/model', 'https://youtube.com/@model', 'https://tumblr.com/model', 'https://flickr.com/photos/model'),
+		), $person);
+		$this->assertNull(portfolio_studio_public_person(array('name' => '<b> </b>', 'occupation' => 'Model')));
+	}
+
+	public function test_public_settings_route_exposes_person_and_existing_social_urls() {
+		$image_id = $this->image();
+		update_option('portfolio_studio_site_settings', array('instagram_url' => 'https://instagram.com/model'));
+		update_option('portfolio_studio_seo_settings', array('person' => array(
+			'name' => 'Example Model',
+			'description' => 'Approved biography.',
+			'occupation' => 'Model',
+			'image_id' => $image_id,
+		)));
+		wp_set_current_user(0);
+		$response = rest_get_server()->dispatch(new WP_REST_Request('GET', '/portfolio-studio/v1/settings'));
+		$this->assertSame(200, $response->get_status());
+		$this->assertSame(array(
+			'name' => 'Example Model',
+			'description' => 'Approved biography.',
+			'occupation' => 'Model',
+			'image' => array('id' => $image_id, 'url' => wp_get_attachment_image_src($image_id, 'full')[0], 'width' => 1200, 'height' => 630, 'alt' => 'Media image description'),
+			'sameAs' => array('https://instagram.com/model'),
+		), $response->get_data()['seo']['person']);
+	}
+
+	public function test_person_values_are_bounded_and_invalid_fields_clear() {
+		$person = portfolio_studio_sanitize_person(array(
+			'name' => str_repeat('N', 250),
+			'description' => str_repeat('D', 600),
+			'occupation' => str_repeat('M', 150),
+			'image_id' => array('bad'),
+			'image_alt' => array('bad'),
+		));
+		$this->assertSame(200, strlen($person['name']));
+		$this->assertSame(500, strlen($person['description']));
+		$this->assertSame(120, strlen($person['occupation']));
+		$this->assertSame(0, $person['image_id']);
+		$this->assertSame('', $person['image_alt']);
 	}
 
 	public function test_nonpublic_parent_or_invalid_media_is_not_exposed() {
@@ -156,6 +221,9 @@ class Portfolio_Studio_SEO_Test extends WP_UnitTestCase {
 		portfolio_studio_render_seo_settings();
 		$html = ob_get_clean();
 		$this->assertStringContainsString('portfolio_studio_seo_settings[home][title]', $html);
+		$this->assertStringContainsString('portfolio_studio_seo_settings[person][name]', $html);
+		$this->assertStringContainsString('portfolio_studio_seo_settings[person][occupation]', $html);
+		$this->assertStringContainsString('data-seo-image="portfolio-person-image_id"', $html);
 		$this->assertStringContainsString('data-seo-image="portfolio-default-seo-image"', $html);
 		$this->assertStringContainsString('_wpnonce', $html);
 	}

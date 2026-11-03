@@ -75,6 +75,7 @@ function pickerFixture(id) {
 for (const id of [
   "portfolio-page-seo-image_id",
   "portfolio-home-seo-image_id",
+  "portfolio-person-image_id",
   "portfolio-default-seo-image",
 ]) {
   test(`chooses and removes the sharing image for ${id}`, () => {
