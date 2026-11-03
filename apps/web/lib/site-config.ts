@@ -10,6 +10,21 @@ export interface NotFoundBackgroundImage {
   height: number;
 }
 
+export interface SeoImage extends NotFoundBackgroundImage {
+  alt: string;
+}
+
+export interface SeoOverrides {
+  title: string;
+  description: string;
+  image: SeoImage | null;
+}
+
+export interface SiteSeoSettings {
+  home: SeoOverrides;
+  defaultImage: SeoImage | null;
+}
+
 export interface SiteConfig {
   name: string;
   description: string;
@@ -17,6 +32,7 @@ export interface SiteConfig {
   homeVideoId: string;
   homeVideoStart: number;
   notFoundBackgroundImage?: NotFoundBackgroundImage | null;
+  seo: SiteSeoSettings;
   socialLinks: { label: string; href: string }[];
   socialUrls: SocialUrls;
   navigation: typeof navigationItems;
@@ -55,6 +71,10 @@ const previewSiteConfig: SiteConfig = {
   homeVideoId: "",
   homeVideoStart: 0,
   notFoundBackgroundImage: null,
+  seo: {
+    home: { title: "", description: "", image: null },
+    defaultImage: null,
+  },
   socialLinks: [],
   socialUrls: {
     instagram: "",
@@ -125,6 +145,45 @@ function normalizeNotFoundImage(
   }
 }
 
+export function normalizeSeoImage(value: unknown): SeoImage | null {
+  if (typeof value !== "object" || value === null || Array.isArray(value))
+    return null;
+  const image = value as Record<string, unknown>;
+  const normalized = normalizeNotFoundImage(image);
+  if (!normalized || typeof image.alt !== "string") return null;
+  return {
+    ...normalized,
+    alt: image.alt.trim().slice(0, 500),
+  };
+}
+
+function normalizeSeoOverrides(value: unknown): SeoOverrides {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return { title: "", description: "", image: null };
+  }
+  const fields = value as Record<string, unknown>;
+  return {
+    title:
+      typeof fields.title === "string" ? fields.title.trim().slice(0, 200) : "",
+    description:
+      typeof fields.description === "string"
+        ? fields.description.trim().slice(0, 500)
+        : "",
+    image: normalizeSeoImage(fields.image),
+  };
+}
+
+function normalizeSiteSeo(value: unknown): SiteSeoSettings {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return previewSiteConfig.seo;
+  }
+  const fields = value as Record<string, unknown>;
+  return {
+    home: normalizeSeoOverrides(fields.home),
+    defaultImage: normalizeSeoImage(fields.defaultImage),
+  };
+}
+
 function normalizeSiteConfig(value: unknown): SiteConfig | undefined {
   if (typeof value !== "object" || value === null) return undefined;
   const fields = value as Record<string, unknown>;
@@ -168,6 +227,7 @@ function normalizeSiteConfig(value: unknown): SiteConfig | undefined {
     notFoundBackgroundImage: normalizeNotFoundImage(
       fields.notFoundBackgroundImage,
     ),
+    seo: normalizeSiteSeo(fields.seo),
     socialLinks,
     socialUrls,
   };

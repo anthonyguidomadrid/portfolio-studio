@@ -3,7 +3,7 @@ import { generateMetadata as rootMetadata } from "@/app/layout";
 import { generateMetadata as aboutMetadata } from "@/app/about/page";
 import { generateMetadata as contactMetadata } from "@/app/contact/page";
 import { generateMetadata as legalMetadata } from "@/app/legal/page";
-import { metadata as homeMetadata } from "@/app/page";
+import { generateMetadata as homeMetadata } from "@/app/page";
 import { generateMetadata as portfolioMetadata } from "@/app/portfolio/page";
 import { generateMetadata as videosMetadata } from "@/app/videos/page";
 
@@ -21,17 +21,29 @@ describe("page canonical metadata", () => {
     vi.stubEnv("CMS_URL", "https://cms.example.test");
     vi.stubGlobal(
       "fetch",
-      vi.fn<typeof fetch>().mockImplementation(
-        async () =>
-          new Response("[]", {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-          }),
-      ),
+      vi.fn<typeof fetch>().mockImplementation(async (input) => {
+        const url = new URL(String(input));
+        if (url.pathname.endsWith("/portfolio-studio/v1/settings")) {
+          return Response.json({
+            name: "Example Studio",
+            description: "A portfolio.",
+            seo: { home: {}, defaultImage: null },
+          });
+        }
+        const slug = url.searchParams.get("slug");
+        return Response.json([
+          {
+            slug,
+            title: { rendered: slug ?? "Page" },
+            content: { rendered: "<p>Page content</p>" },
+            seo: { title: "", description: "", image: null },
+          },
+        ]);
+      }),
     );
 
     const metadata = [
-      homeMetadata,
+      await homeMetadata(),
       await aboutMetadata(),
       await portfolioMetadata(),
       await videosMetadata(),
@@ -56,7 +68,11 @@ describe("page canonical metadata", () => {
       vi
         .fn<typeof fetch>()
         .mockResolvedValue(
-          Response.json({ name: "Example Studio", description: "A portfolio" }),
+          Response.json({
+            name: "Example Studio",
+            description: "A portfolio",
+            seo: { home: {}, defaultImage: null },
+          }),
         ),
     );
 

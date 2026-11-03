@@ -8,6 +8,10 @@ const previewConfig = {
   homeVideoId: "",
   homeVideoStart: 0,
   notFoundBackgroundImage: null,
+  seo: {
+    home: { title: "", description: "", image: null },
+    defaultImage: null,
+  },
   socialLinks: [],
   socialUrls: {
     instagram: "",
@@ -76,6 +80,10 @@ describe("getSiteConfig", () => {
       homeVideoId: "dQw4w9WgXcQ",
       homeVideoStart: 90,
       notFoundBackgroundImage: null,
+      seo: {
+        home: { title: "", description: "", image: null },
+        defaultImage: null,
+      },
       socialLinks: [{ label: "Work", href: "https://example.test/work" }],
       socialUrls: {
         instagram: "https://instagram.com/example",
@@ -116,6 +124,65 @@ describe("getSiteConfig", () => {
     await expect(getSiteConfig()).resolves.toMatchObject({
       notFoundBackgroundImage: image,
     });
+  });
+
+  it("normalizes valid page defaults and Home SEO settings", async () => {
+    vi.stubEnv("CMS_URL", "https://cms.example.test");
+    const image = {
+      id: 12,
+      url: "https://cms.example.test/wp-content/uploads/share.jpg",
+      width: 1200,
+      height: 630,
+      alt: "Sharing image",
+    };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn<typeof fetch>().mockResolvedValue(
+        response({
+          name: "Studio",
+          seo: {
+            home: { title: "  Home title ", description: "  Home description ", image },
+            defaultImage: image,
+          },
+        }),
+      ),
+    );
+
+    await expect(getSiteConfig()).resolves.toMatchObject({
+      seo: {
+        home: { title: "Home title", description: "Home description", image },
+        defaultImage: image,
+      },
+    });
+  });
+
+  it.each([
+    null,
+    [],
+    { title: 5, description: {}, image: { id: 12, url: "javascript:alert(1)" } },
+    {
+      title: "x".repeat(250),
+      description: "y".repeat(600),
+      image: {
+        id: 12,
+        url: "https://external.example.test/wp-content/uploads/share.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Unsafe origin",
+      },
+    },
+  ])("rejects malformed or unsafe SEO defaults %p", async (seo) => {
+    vi.stubEnv("CMS_URL", "https://cms.example.test");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn<typeof fetch>().mockResolvedValue(response({ name: "Studio", seo })),
+    );
+    const config = await getSiteConfig();
+    expect(config.name).toBe("Studio");
+    expect(config.seo.home.image).toBeNull();
+    expect(config.seo.defaultImage).toBeNull();
+    expect(config.seo.home.title.length).toBeLessThanOrEqual(200);
+    expect(config.seo.home.description.length).toBeLessThanOrEqual(500);
   });
 
   it.each([

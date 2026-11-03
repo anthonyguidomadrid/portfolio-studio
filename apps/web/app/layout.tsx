@@ -18,6 +18,17 @@ const montserrat = Montserrat({
 
 export async function generateMetadata(): Promise<Metadata> {
   const siteConfig = await getSiteConfig();
+  const defaultImage = siteConfig.seo.defaultImage;
+  const openGraphImages = defaultImage
+    ? [
+        {
+          url: defaultImage.url,
+          width: defaultImage.width,
+          height: defaultImage.height,
+          alt: defaultImage.alt,
+        },
+      ]
+    : undefined;
   return {
     metadataBase: absoluteUrl("/"),
     title: {
@@ -52,6 +63,13 @@ export async function generateMetadata(): Promise<Metadata> {
       title: siteConfig.name,
       description: siteConfig.description,
       url: absoluteUrl("/"),
+      ...(openGraphImages ? { images: openGraphImages } : {}),
+    },
+    twitter: {
+      card: openGraphImages ? "summary_large_image" : "summary",
+      title: siteConfig.name,
+      description: siteConfig.description,
+      ...(openGraphImages ? { images: openGraphImages } : {}),
     },
   };
 }

@@ -11,11 +11,16 @@ afterEach(() => {
 
 function mockPages(pages: unknown) {
   const fetchMock = vi.fn<typeof fetch>().mockImplementation(
-    async () =>
-      new Response(JSON.stringify(pages), {
+    async (input) => {
+      const url = new URL(String(input));
+      const body = url.pathname.endsWith("/portfolio-studio/v1/settings")
+        ? { name: "Studio", description: "A creative portfolio." }
+        : pages;
+      return new Response(JSON.stringify(body), {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      }),
+      });
+    },
   );
   vi.stubEnv("CMS_URL", "https://cms.example.test");
   vi.stubGlobal("fetch", fetchMock);
@@ -40,9 +45,15 @@ describe("Legal page integration", () => {
 
     const markup = renderToStaticMarkup(await LegalPage());
 
-    expect(await generateMetadata()).toEqual({
+    expect(await generateMetadata()).toMatchObject({
       title: "Privacy & cookies",
       alternates: { canonical: "/legal" },
+      description: "A creative portfolio.",
+      openGraph: {
+        title: "Privacy & cookies",
+        url: new URL("http://localhost:3000/legal"),
+      },
+      twitter: { title: "Privacy & cookies" },
     });
     expect(markup).toContain('aria-label="Privacy &amp; cookies"');
     expect(markup).toContain("<h1>Our privacy notice</h1>");
@@ -56,8 +67,13 @@ describe("Legal page integration", () => {
     expect(markup).not.toContain("Cookie Settings");
 
     const [url, options] = fetchMock.mock.calls[0];
-    expect(String(url)).toBe(
-      "https://cms.example.test/wp-json/wp/v2/pages?slug=legal&_fields=slug%2Ctitle%2Ccontent",
+    const requestedUrl = new URL(String(url));
+    expect(requestedUrl.origin + requestedUrl.pathname).toBe(
+      "https://cms.example.test/wp-json/wp/v2/pages",
+    );
+    expect(requestedUrl.searchParams.get("slug")).toBe("legal");
+    expect(requestedUrl.searchParams.get("_fields")).toBe(
+      "slug,title,content,seo",
     );
     expect(options).toMatchObject({
       next: { revalidate: false, tags: ["wp-page-legal"] },
@@ -76,9 +92,12 @@ describe("Legal page integration", () => {
 
       const markup = renderToStaticMarkup(await LegalPage());
 
-      expect(await generateMetadata()).toEqual({
+      expect(await generateMetadata()).toMatchObject({
         title: "Privacy and cookies",
         alternates: { canonical: "/legal" },
+        description: "A creative portfolio.",
+        openGraph: { title: "Privacy and cookies" },
+        twitter: { title: "Privacy and cookies" },
       });
       expect(markup).toContain('aria-label="Privacy and cookies"');
       expect(markup).toContain("This page is currently unavailable.");
@@ -93,9 +112,12 @@ describe("Legal page integration", () => {
 
     const markup = renderToStaticMarkup(await LegalPage());
 
-    expect(await generateMetadata()).toEqual({
+    expect(await generateMetadata()).toMatchObject({
       title: "Privacy and cookies",
       alternates: { canonical: "/legal" },
+      description: "A flexible home for selected work.",
+      openGraph: { title: "Privacy and cookies" },
+      twitter: { title: "Privacy and cookies" },
     });
     expect(markup).toContain('aria-label="Privacy and cookies"');
     expect(markup).toContain("This page is currently unavailable.");
@@ -108,9 +130,12 @@ describe("Legal page integration", () => {
 
     const markup = renderToStaticMarkup(await LegalPage());
 
-    expect(await generateMetadata()).toEqual({
+    expect(await generateMetadata()).toMatchObject({
       title: "Privacy and cookies",
       alternates: { canonical: "/legal" },
+      description: "A flexible home for selected work.",
+      openGraph: { title: "Privacy and cookies" },
+      twitter: { title: "Privacy and cookies" },
     });
     expect(markup).toContain("This page is currently unavailable.");
     expect(fetchMock).not.toHaveBeenCalled();

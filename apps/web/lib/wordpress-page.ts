@@ -1,11 +1,16 @@
 import sanitizeHtml from "sanitize-html";
 import { cmsPageCacheTag, type CmsPageSlug } from "@/lib/cms-pages";
-import type { SocialUrls } from "@/lib/site-config";
+import {
+  normalizeSeoImage,
+  type SeoOverrides,
+  type SocialUrls,
+} from "@/lib/site-config";
 
 export interface CmsPageContent {
   title: string;
   html: string;
   socialUrls: Partial<SocialUrls>;
+  seo: SeoOverrides;
 }
 
 const ENTITIES: Record<string, string> = {
@@ -180,10 +185,28 @@ function normalizePage(
   const plainTitle = toPlainText(title).slice(0, 160);
   if (!plainTitle) return undefined;
 
+  const rawSeo = page?.seo;
+  const seoFields =
+    typeof rawSeo === "object" && rawSeo !== null && !Array.isArray(rawSeo)
+      ? (rawSeo as Record<string, unknown>)
+      : {};
+  const seo: SeoOverrides = {
+    title:
+      typeof seoFields.title === "string"
+        ? seoFields.title.trim().slice(0, 200)
+        : "",
+    description:
+      typeof seoFields.description === "string"
+        ? seoFields.description.trim().slice(0, 500)
+        : "",
+    image: normalizeSeoImage(seoFields.image),
+  };
+
   return {
     title: plainTitle,
     html: sanitizePageHtml(content).trim(),
     socialUrls: extractSocialUrls(content),
+    seo,
   };
 }
 
@@ -195,7 +218,7 @@ export async function getPage(
 
   const url = new URL(`${cmsUrl}/wp-json/wp/v2/pages`);
   url.searchParams.set("slug", slug);
-  url.searchParams.set("_fields", "slug,title,content");
+  url.searchParams.set("_fields", "slug,title,content,seo");
 
   try {
     const response = await fetch(url, {

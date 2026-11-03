@@ -4,17 +4,24 @@ import { PortfolioGallery } from "@/components/portfolio-gallery";
 import { getPortfolioCollection } from "@/lib/portfolio-photos";
 import { getPage } from "@/lib/wordpress-page";
 import { messages } from "@/messages/en";
+import { getSiteConfig } from "@/lib/site-config";
+import { createPageMetadata } from "@/lib/seo-metadata";
 
 interface PortfolioPageProps {
   searchParams: Promise<{ tag?: string | string[] }>;
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPage("portfolio");
-  return {
-    title: page?.title ?? messages.pages.portfolio,
-    alternates: { canonical: "/portfolio" },
-  };
+  const [page, siteConfig] = await Promise.all([
+    getPage("portfolio"),
+    getSiteConfig(),
+  ]);
+  return createPageMetadata({
+    canonical: "/portfolio",
+    fallbackTitle: page?.title ?? messages.pages.portfolio,
+    seo: page?.seo,
+    siteConfig,
+  });
 }
 
 export default async function PortfolioPage({

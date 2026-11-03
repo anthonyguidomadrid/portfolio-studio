@@ -55,6 +55,10 @@ const siteConfig: SiteConfig = {
   contactEmail: "",
   homeVideoId: "dQw4w9WgXcQ",
   homeVideoStart: 45,
+  seo: {
+    home: { title: "", description: "", image: null },
+    defaultImage: null,
+  },
   socialLinks: [],
   socialUrls: {
     instagram: "",

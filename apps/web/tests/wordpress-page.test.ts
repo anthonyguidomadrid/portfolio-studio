@@ -231,6 +231,7 @@ describe("getPage", () => {
       title: "About me",
       html: "<p>Hi</p>",
       socialUrls: {},
+      seo: { title: "", description: "", image: null },
     });
     const [url, init] = fetchMock.mock.calls[0];
     const requested = new URL(String(url));
@@ -238,11 +239,85 @@ describe("getPage", () => {
       "https://cms.example.test/wp-json/wp/v2/pages",
     );
     expect(requested.searchParams.get("slug")).toBe("about");
+    expect(requested.searchParams.get("_fields")).toBe(
+      "slug,title,content,seo",
+    );
     expect(init).toEqual(
       expect.objectContaining({
         next: { revalidate: false, tags: ["wp-page-about"] },
       }),
     );
+  });
+
+  it("validates and normalizes page SEO overrides and sharing images", async () => {
+    vi.stubEnv("CMS_URL", "https://cms.example.test");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn<typeof fetch>().mockResolvedValue(
+        json([
+          {
+            ...aboutPage,
+            seo: {
+              title: "  About SEO  ",
+              description: "  Search description  ",
+              image: {
+                id: 7,
+                url: "https://cms.example.test/wp-content/uploads/share.jpg",
+                width: 1200,
+                height: 630,
+                alt: "  Share image alt  ",
+              },
+            },
+          },
+        ]),
+      ),
+    );
+
+    await expect(getPage("about")).resolves.toMatchObject({
+      seo: {
+        title: "About SEO",
+        description: "Search description",
+        image: {
+          id: 7,
+          width: 1200,
+          height: 630,
+          alt: "Share image alt",
+        },
+      },
+    });
+  });
+
+  it("ignores page SEO images outside CMS uploads and malformed SEO values", async () => {
+    vi.stubEnv("CMS_URL", "https://cms.example.test");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn<typeof fetch>().mockResolvedValue(
+        json([
+          {
+            ...aboutPage,
+            seo: {
+              title: 5,
+              description: "d".repeat(600),
+              image: {
+                id: 7,
+                url: "https://external.example.test/wp-content/uploads/share.jpg",
+                width: 1200,
+                height: 630,
+                alt: "Unsafe image",
+              },
+            },
+          },
+        ]),
+      ),
+    );
+
+    await expect(getPage("about")).resolves.toMatchObject({
+      seo: {
+        title: "",
+        description: "d".repeat(500),
+        image: null,
+      },
+    });
   });
 
   it("decodes entities in the title to plain text", async () => {
