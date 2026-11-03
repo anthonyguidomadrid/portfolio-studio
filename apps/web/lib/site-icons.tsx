@@ -23,16 +23,25 @@ export async function renderSiteIcon(size: number) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#111111",
-        color: "#ffffff",
-        fontFamily: "sans-serif",
-        fontSize: size * (initials.length > 1 ? 15 / 32 : 21 / 32),
-        fontWeight: 400,
-        lineHeight: 1,
-        boxShadow: `inset 0 0 0 ${size / 32}px #626262`,
       }}
     >
-      {initials}
+      <div
+        style={{
+          width: "87.5%",
+          height: "87.5%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#ffffff",
+          color: "#111111",
+          fontFamily: "sans-serif",
+          fontSize: size * (initials.length > 1 ? 15 / 32 : 21 / 32),
+          fontWeight: 400,
+          lineHeight: 1,
+        }}
+      >
+        {initials}
+      </div>
     </div>,
     { width: size, height: size },
   );
@@ -44,7 +53,7 @@ export async function renderSvgIcon() {
     return `&#${character.charCodeAt(0)};`;
   });
   return new Response(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="#111111"/><rect x="0.5" y="0.5" width="31" height="31" fill="none" stroke="#626262"/><text x="16" y="16" dy=".35em" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="${initials.length > 1 ? 15 : 21}" font-weight="400">${escapedInitials}</text></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="2" y="2" width="28" height="28" fill="#ffffff"/><text x="16" y="16" dy=".35em" text-anchor="middle" fill="#111111" font-family="sans-serif" font-size="${initials.length > 1 ? 15 : 21}" font-weight="400">${escapedInitials}</text></svg>`,
     { headers: { "Content-Type": "image/svg+xml" } },
   );
 }

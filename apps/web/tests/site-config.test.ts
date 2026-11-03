@@ -141,7 +141,11 @@ describe("getSiteConfig", () => {
         response({
           name: "Studio",
           seo: {
-            home: { title: "  Home title ", description: "  Home description ", image },
+            home: {
+              title: "  Home title ",
+              description: "  Home description ",
+              image,
+            },
             defaultImage: image,
           },
         }),
@@ -159,7 +163,11 @@ describe("getSiteConfig", () => {
   it.each([
     null,
     [],
-    { title: 5, description: {}, image: { id: 12, url: "javascript:alert(1)" } },
+    {
+      title: 5,
+      description: {},
+      image: { id: 12, url: "javascript:alert(1)" },
+    },
     {
       title: "x".repeat(250),
       description: "y".repeat(600),
@@ -175,7 +183,9 @@ describe("getSiteConfig", () => {
     vi.stubEnv("CMS_URL", "https://cms.example.test");
     vi.stubGlobal(
       "fetch",
-      vi.fn<typeof fetch>().mockResolvedValue(response({ name: "Studio", seo })),
+      vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(response({ name: "Studio", seo })),
     );
     const config = await getSiteConfig();
     expect(config.name).toBe("Studio");

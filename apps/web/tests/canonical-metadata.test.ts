@@ -65,15 +65,13 @@ describe("page canonical metadata", () => {
     vi.stubEnv("CMS_URL", "https://cms.example.test");
     vi.stubGlobal(
       "fetch",
-      vi
-        .fn<typeof fetch>()
-        .mockResolvedValue(
-          Response.json({
-            name: "Example Studio",
-            description: "A portfolio",
-            seo: { home: {}, defaultImage: null },
-          }),
-        ),
+      vi.fn<typeof fetch>().mockResolvedValue(
+        Response.json({
+          name: "Example Studio",
+          description: "A portfolio",
+          seo: { home: {}, defaultImage: null },
+        }),
+      ),
     );
 
     expect(await rootMetadata()).toMatchObject({

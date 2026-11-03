@@ -51,6 +51,11 @@ describe("site icons", () => {
     const svg = await response.text();
     expect(svg).toContain('viewBox="0 0 32 32"');
     expect(svg).toContain('font-weight="400"');
+    expect(svg).toContain(
+      '<rect x="2" y="2" width="28" height="28" fill="#ffffff"/>',
+    );
+    expect(svg).toContain('fill="#111111"');
+    expect(svg).not.toContain("stroke=");
     expect(svg).toContain("&#60;&#38;</text>");
   });
 
@@ -118,6 +123,8 @@ describe("site icons", () => {
       start_url: "/",
       scope: "/",
       display: "standalone",
+      background_color: "#ffffff",
+      theme_color: "#ffffff",
       icons: [
         {
           src: "/favicons/web-app-manifest-192x192.png",

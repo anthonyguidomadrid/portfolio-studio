@@ -10,18 +10,16 @@ afterEach(() => {
 });
 
 function mockPages(pages: unknown) {
-  const fetchMock = vi.fn<typeof fetch>().mockImplementation(
-    async (input) => {
-      const url = new URL(String(input));
-      const body = url.pathname.endsWith("/portfolio-studio/v1/settings")
-        ? { name: "Studio", description: "A creative portfolio." }
-        : pages;
-      return new Response(JSON.stringify(body), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
-    },
-  );
+  const fetchMock = vi.fn<typeof fetch>().mockImplementation(async (input) => {
+    const url = new URL(String(input));
+    const body = url.pathname.endsWith("/portfolio-studio/v1/settings")
+      ? { name: "Studio", description: "A creative portfolio." }
+      : pages;
+    return new Response(JSON.stringify(body), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  });
   vi.stubEnv("CMS_URL", "https://cms.example.test");
   vi.stubGlobal("fetch", fetchMock);
   return fetchMock;

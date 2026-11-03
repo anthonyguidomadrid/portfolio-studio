@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import { absoluteUrl, type SeoOverrides, type SiteConfig } from "@/lib/site-config";
+import {
+  absoluteUrl,
+  type SeoOverrides,
+  type SiteConfig,
+} from "@/lib/site-config";
 
 interface PageMetadataOptions {
   canonical: string;

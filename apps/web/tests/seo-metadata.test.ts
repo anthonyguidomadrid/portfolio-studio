@@ -58,9 +58,7 @@ describe("public SEO metadata", () => {
       },
       twitter: {
         card: "summary_large_image",
-        images: [
-          expect.objectContaining({ alt: "Studio portrait" }),
-        ],
+        images: [expect.objectContaining({ alt: "Studio portrait" })],
       },
     });
   });
