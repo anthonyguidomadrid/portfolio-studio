@@ -212,9 +212,9 @@ describe("getSiteConfig", () => {
       vi.stubEnv("CMS_URL", "https://cms.example.test");
       vi.stubGlobal(
         "fetch",
-        vi.fn<typeof fetch>().mockResolvedValue(
-          response({ name: "Studio", seo: { person } }),
-        ),
+        vi
+          .fn<typeof fetch>()
+          .mockResolvedValue(response({ name: "Studio", seo: { person } })),
       );
       await expect(getSiteConfig()).resolves.toMatchObject({
         seo: { person: null },

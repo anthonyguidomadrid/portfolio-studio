@@ -95,10 +95,11 @@ items/attachments. Delivery is best effort, without a persistent retry queue;
 frontend time-based revalidation is still needed. Media hooks deliberately
 invalidate broadly to avoid missing shared cover updates.
 
-The current frontend receiver does not yet accept `portfolio_item` events. The
-frontend owner must add support that invalidates the photo collection cache tag
-and `/portfolio`, preserving existing secret validation. No frontend change or
-deployment is included here.
+The frontend receiver accepts this event, validates the shared secret, expires
+the `wp-portfolio-photos` cache tag, and revalidates `/portfolio`. Delivery is
+best-effort and has no persistent retry queue; use the frontend's documented
+cache/release procedure if an event fails. No deployment is implied by this
+contract.
 
 ## Verification
 

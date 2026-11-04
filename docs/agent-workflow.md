@@ -7,8 +7,8 @@ The **coordinator** is the planning orchestrator, not an implementation agent or
 1. Open Copilot Chat and select **coordinator** from the agent picker. If mentions are supported, use `@coordinator`.
 2. Describe the outcome, constraints, known CMS/API decisions, and ask it to inspect the current repo and return issue-ready tasks with owner, files, dependencies, acceptance criteria, verification, and handoff evidence.
 3. The coordinator checks the worktree, `.github/copilot-instructions.md`, `docs/architecture.md`, `docs/backlog.md`, package scripts, and relevant implementation before planning. It identifies existing behavior so an issue does not duplicate completed work.
-4. Review its baseline and plan. Confirm product expansions such as adding public routes/content types explicitly; the current shipped frontend scope is one Coming Soon Home page reading public site settings from WordPress.
-5. Agree the WordPress API contract before frontend work depends on new fields or events. For the current app, the active public read contract is `/wp-json/portfolio-studio/v1/settings`; the plugin also has future portfolio capabilities that the frontend does not currently consume.
+4. Review its baseline and plan against the shipped routes: Home, About, Contact, Portfolio, Videos, and Legal. Do not rely on historical backlog descriptions without checking the current code and tests.
+5. Agree the WordPress API contract before frontend work depends on new fields or events. Current frontend integrations include `/wp-json/portfolio-studio/v1/settings`, `/wp-json/portfolio-studio/v1/photos`, published WordPress Pages, SEO metadata, and the optional Person profile used by JSON-LD.
 6. Create one GitHub issue per approved implementation task using `.github/ISSUE_TEMPLATE/feature.yml`. The coordinator returns text only; it does not create issues or branches.
 
 ## 2. Implement on separate branches or pull requests

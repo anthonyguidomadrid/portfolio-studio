@@ -188,7 +188,8 @@ function normalizeSeoPerson(value: unknown): SeoPerson | null {
     return null;
   }
   const fields = value as Record<string, unknown>;
-  const name = typeof fields.name === "string" ? fields.name.trim().slice(0, 200) : "";
+  const name =
+    typeof fields.name === "string" ? fields.name.trim().slice(0, 200) : "";
   if (!name) return null;
 
   const sameAs = Array.isArray(fields.sameAs)

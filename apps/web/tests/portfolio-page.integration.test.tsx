@@ -19,38 +19,38 @@ describe("Portfolio page integration", () => {
           ? { name: "Portfolio Studio" }
           : url.pathname.endsWith("/wp/v2/pages")
             ? [
-              {
-                slug: "portfolio",
-                title: { rendered: "My selected work" },
-                content: {
-                  rendered:
-                    '<p class="eyebrow">Fashion &amp; campaign work</p><p>Explore the portfolio.</p>',
+                {
+                  slug: "portfolio",
+                  title: { rendered: "My selected work" },
+                  content: {
+                    rendered:
+                      '<p class="eyebrow">Fashion &amp; campaign work</p><p>Explore the portfolio.</p>',
+                  },
                 },
-              },
               ]
             : {
-              items: [
-                {
-                  id: 10,
-                  slug: "studio-portrait",
-                  title: "Studio Portrait",
-                  displayOrder: 1,
-                  image: {
-                    id: 110,
-                    url: "https://cms.example.test/wp-content/uploads/studio-portrait.jpg",
-                    width: 800,
-                    height: 1200,
-                    alt: "Model in the studio",
-                    caption: "Studio session",
+                items: [
+                  {
+                    id: 10,
+                    slug: "studio-portrait",
+                    title: "Studio Portrait",
+                    displayOrder: 1,
+                    image: {
+                      id: 110,
+                      url: "https://cms.example.test/wp-content/uploads/studio-portrait.jpg",
+                      width: 800,
+                      height: 1200,
+                      alt: "Model in the studio",
+                      caption: "Studio session",
+                    },
+                    tags: [{ id: 1, slug: "editorial", name: "Editorial" }],
                   },
-                  tags: [{ id: 1, slug: "editorial", name: "Editorial" }],
-                },
-              ],
-              tags: [{ id: 1, slug: "editorial", name: "Editorial" }],
-              total: 1,
-              totalPages: 1,
-              page: 1,
-            };
+                ],
+                tags: [{ id: 1, slug: "editorial", name: "Editorial" }],
+                total: 1,
+                totalPages: 1,
+                page: 1,
+              };
         return new Response(JSON.stringify(body), {
           status: 200,
           headers: { "Content-Type": "application/json" },
@@ -102,7 +102,9 @@ describe("Portfolio page integration", () => {
           return Response.json({ name: "Portfolio Studio" });
         }
         const isPage = url.pathname.endsWith("/wp/v2/pages");
-        return new Response(isPage ? "[]" : "offline", { status: isPage ? 200 : 503 });
+        return new Response(isPage ? "[]" : "offline", {
+          status: isPage ? 200 : 503,
+        });
       }),
     );
 

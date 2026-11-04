@@ -11,20 +11,22 @@ afterEach(() => {
 describe("Videos page integration", () => {
   it("renders the published WordPress videos page", async () => {
     vi.stubEnv("CMS_URL", "https://cms.example.test");
-    const fetchMock = vi.fn<typeof fetch>().mockImplementation(async (input) => {
-      const url = new URL(String(input));
-      return Response.json(
-        url.pathname.endsWith("/portfolio-studio/v1/settings")
-          ? { name: "Portfolio Studio" }
-          : [
-              {
-                slug: "videos",
-                title: { rendered: "Videos" },
-                content: { rendered: "<p>Selected video work.</p>" },
-              },
-            ],
-      );
-    });
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockImplementation(async (input) => {
+        const url = new URL(String(input));
+        return Response.json(
+          url.pathname.endsWith("/portfolio-studio/v1/settings")
+            ? { name: "Portfolio Studio" }
+            : [
+                {
+                  slug: "videos",
+                  title: { rendered: "Videos" },
+                  content: { rendered: "<p>Selected video work.</p>" },
+                },
+              ],
+        );
+      });
     vi.stubGlobal("fetch", fetchMock);
 
     const markup = renderToStaticMarkup(await VideosPage());

@@ -1,6 +1,6 @@
 # Current Backlog
 
-This list describes the current minimal product baseline, not the earlier broader portfolio specification. The app presently has one public Home page that reads WordPress site settings. Do not add portfolio, About, Contact, localization, or other routes unless the user explicitly expands scope. The coordinator must inspect code and tests before opening an issue; close or narrow a task if its criteria already pass.
+This list contains historical and remaining verification work. The product has since expanded beyond the original minimal Home-only baseline: Home, About, Contact, Portfolio, Videos, Legal, SEO metadata, optional Person JSON-LD, and the WordPress photo API are implemented. Verify current code and tests before opening an issue; close, update, or narrow tasks that describe already-shipped work.
 
 One item equals one issue, branch, and PR. Only work on items with an owner, dependencies, acceptance criteria, and verification plan.
 
@@ -17,8 +17,8 @@ One item equals one issue, branch, and PR. Only work on items with an owner, dep
 
 **Status:** Endpoint and frontend client exist; verify end to end when WordPress runtime is available.
 **Owner:** WordPress agent, with frontend contract review
-**Scope:** Confirm `/wp-json/portfolio-studio/v1/settings` exposes `name`, `description`, `contactEmail`, legacy `socialLinks`, and the seven optional platform URL fields; confirm WordPress Settings → Portfolio site updates them.
-**Acceptance criteria:** An activated local plugin returns the documented public response; invalid platform URLs are discarded and blank fields remain empty; no private setting or credential is exposed; `getSiteConfig()` accepts the response and falls back safely when CMS is unavailable.
+**Scope:** Confirm `/wp-json/portfolio-studio/v1/settings` exposes `name`, `description`, `contactEmail`, the seven optional platform URL fields, optional 404 media, Home/default SEO data, and optional Person data; confirm the corresponding settings screens update them.
+**Acceptance criteria:** An activated local plugin returns the documented public response; invalid platform URLs and media are discarded; Person is omitted until a name is configured and `sameAs` reuses configured public profile URLs; no private setting or credential is exposed; `getSiteConfig()` accepts the response and falls back safely when CMS is unavailable.
 **Verification:** REST request against a local WordPress instance plus `npm --prefix apps/web run test`. If PHP/Docker are unavailable, report this as an unverified integration rather than claiming success.
 **Dependencies:** B01.
 
@@ -41,12 +41,12 @@ One item equals one issue, branch, and PR. Only work on items with an owner, dep
 **Verification:** Staging smoke checks and a documented restore test; CI checks from B01.
 **Dependencies:** B01–B03.
 
-## B05 — Decide future public product scope
+## B05 — Review future public product scope
 
-**Status:** Decision gate, not an implementation issue.
+**Status:** Original scope decision is superseded by the shipped routes. Use only for additional future scope.
 **Owner:** Product owner
-**Scope:** Decide whether to add portfolio listing/detail routes, tags/video filtering, About, Contact, localization, or other public features.
-**Acceptance criteria:** The product owner names the desired routes/content and priorities. Only then should the coordinator create feature issues and identify CMS contract dependencies.
+**Scope:** Decide whether to add further routes/content types, localization, or other public features beyond the existing routes and portfolio gallery.
+**Acceptance criteria:** The product owner names new desired routes/content and priorities. The coordinator creates focused feature issues and identifies CMS contract dependencies.
 **Verification:** Written scope decision and a coordinator-produced dependency plan.
 **Dependencies:** None; do not start implementation before approval.
 

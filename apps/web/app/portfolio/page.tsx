@@ -57,7 +57,10 @@ export default async function PortfolioPage({
           siteConfig,
         )}
       />
-      <CmsPage html={page?.html} title={page?.title ?? messages.pages.portfolio}>
+      <CmsPage
+        html={page?.html}
+        title={page?.title ?? messages.pages.portfolio}
+      >
         <section
           aria-label={messages.pages.portfolio}
           className="mt-section mb-section"

@@ -6,7 +6,10 @@ The plugin redirects theme-rendered requests with HTTP 302 before WordPress
 canonical, feed, and sitemap handlers run. No theme changes are required.
 
 Published WordPress Pages with slugs `about`, `contact`, `cv`, `portfolio`, and
-`videos` redirect to the corresponding frontend path. The front page and other
+`videos` redirect to the corresponding frontend path. The frontend currently
+implements `about`, `contact`, `portfolio`, and `videos`, but has no `/cv` route;
+the legacy `cv` redirect therefore ends at the frontend's not-found page. The
+front page and other
 theme requests, including archives, attachment pages, missing pages, feeds, and
 WordPress sitemaps, redirect to the frontend homepage. Incoming query parameters
 are not forwarded. Redirects send no-cache and `X-Robots-Tag: noindex, nofollow`
