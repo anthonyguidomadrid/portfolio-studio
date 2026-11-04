@@ -6,6 +6,8 @@ import { getPage } from "@/lib/wordpress-page";
 import { messages } from "@/messages/en";
 import { getSiteConfig } from "@/lib/site-config";
 import { createPageMetadata } from "@/lib/seo-metadata";
+import { StructuredData } from "@/components/structured-data";
+import { createPageStructuredData } from "@/lib/structured-data";
 
 interface PortfolioPageProps {
   searchParams: Promise<{ tag?: string | string[] }>;
@@ -27,10 +29,11 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function PortfolioPage({
   searchParams,
 }: PortfolioPageProps) {
-  const [{ tag }, page, collection] = await Promise.all([
+  const [{ tag }, page, collection, siteConfig] = await Promise.all([
     searchParams,
     getPage("portfolio"),
     getPortfolioCollection(),
+    getSiteConfig(),
   ]);
   const requestedTag = Array.isArray(tag) ? (tag[0] ?? "") : (tag ?? "");
   const initialTag = collection.tags.some(
@@ -38,25 +41,40 @@ export default async function PortfolioPage({
   )
     ? requestedTag
     : "";
+  const title = page?.seo.title || page?.title || messages.pages.portfolio;
 
   return (
-    <CmsPage html={page?.html} title={page?.title ?? messages.pages.portfolio}>
-      <section
-        aria-label={messages.pages.portfolio}
-        className="mt-section mb-section"
-      >
-        {collection.status === "unavailable" ? (
-          <p className="text-body text-muted-foreground">
-            {messages.portfolio.unavailable}
-          </p>
-        ) : (
-          <PortfolioGallery
-            initialTag={initialTag}
-            items={collection.items}
-            tags={collection.tags}
-          />
+    <>
+      <StructuredData
+        data={createPageStructuredData(
+          {
+            canonical: "/portfolio",
+            pageType: "CollectionPage",
+            title,
+            description: page?.seo.description,
+            image: page?.seo.image,
+          },
+          siteConfig,
         )}
-      </section>
-    </CmsPage>
+      />
+      <CmsPage html={page?.html} title={page?.title ?? messages.pages.portfolio}>
+        <section
+          aria-label={messages.pages.portfolio}
+          className="mt-section mb-section"
+        >
+          {collection.status === "unavailable" ? (
+            <p className="text-body text-muted-foreground">
+              {messages.portfolio.unavailable}
+            </p>
+          ) : (
+            <PortfolioGallery
+              initialTag={initialTag}
+              items={collection.items}
+              tags={collection.tags}
+            />
+          )}
+        </section>
+      </CmsPage>
+    </>
   );
 }

@@ -56,7 +56,8 @@ describe("Legal page integration", () => {
     expect(markup).toContain('aria-label="Privacy &amp; cookies"');
     expect(markup).toContain("<h1>Our privacy notice</h1>");
     expect(markup).toContain("<p>CMS legal copy.</p>");
-    expect(markup).not.toContain("<script");
+    expect(markup).not.toContain("<script>alert");
+    expect(markup).toContain('<script type="application/ld+json">');
     expect(markup).not.toContain("onerror");
     expect(markup).not.toContain("javascript:");
     expect(markup).not.toContain("alert(");

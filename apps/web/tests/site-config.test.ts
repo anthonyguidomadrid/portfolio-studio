@@ -11,6 +11,7 @@ const previewConfig = {
   seo: {
     home: { title: "", description: "", image: null },
     defaultImage: null,
+    person: null,
   },
   socialLinks: [],
   socialUrls: {
@@ -83,6 +84,7 @@ describe("getSiteConfig", () => {
       seo: {
         home: { title: "", description: "", image: null },
         defaultImage: null,
+        person: null,
       },
       socialLinks: [{ label: "Work", href: "https://example.test/work" }],
       socialUrls: {
@@ -159,6 +161,66 @@ describe("getSiteConfig", () => {
       },
     });
   });
+
+  it("normalizes the optional Person profile and filters unsafe sameAs links", async () => {
+    vi.stubEnv("CMS_URL", "https://cms.example.test");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn<typeof fetch>().mockResolvedValue(
+        response({
+          name: "Studio",
+          seo: {
+            person: {
+              name: "  Example Model ",
+              description: " Approved bio ",
+              occupation: " Model ",
+              image: {
+                id: 7,
+                url: "https://cms.example.test/wp-content/uploads/portrait.jpg",
+                width: 1200,
+                height: 1600,
+                alt: "Portrait",
+              },
+              sameAs: [
+                "https://instagram.com/example",
+                "https://instagram.com/example",
+                "javascript:alert(1)",
+                "https://user:password@example.com/profile",
+              ],
+            },
+          },
+        }),
+      ),
+    );
+
+    await expect(getSiteConfig()).resolves.toMatchObject({
+      seo: {
+        person: {
+          name: "Example Model",
+          description: "Approved bio",
+          occupation: "Model",
+          image: expect.objectContaining({ alt: "Portrait" }),
+          sameAs: ["https://instagram.com/example"],
+        },
+      },
+    });
+  });
+
+  it.each([null, {}, { name: " " }, { name: 7 }])(
+    "does not expose an invalid Person %p",
+    async (person) => {
+      vi.stubEnv("CMS_URL", "https://cms.example.test");
+      vi.stubGlobal(
+        "fetch",
+        vi.fn<typeof fetch>().mockResolvedValue(
+          response({ name: "Studio", seo: { person } }),
+        ),
+      );
+      await expect(getSiteConfig()).resolves.toMatchObject({
+        seo: { person: null },
+      });
+    },
+  );
 
   it.each([
     null,

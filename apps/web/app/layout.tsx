@@ -8,6 +8,8 @@ import { Suspense } from "react";
 import { ConsentProvider } from "@/components/consent/provider";
 import { ConsentInterface } from "@/components/consent/interface";
 import { Analytics } from "@/components/consent/analytics";
+import { StructuredData } from "@/components/structured-data";
+import { createSiteStructuredData } from "@/lib/structured-data";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -86,6 +88,7 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
     >
       <body className="flex min-h-screen flex-col bg-background font-sans text-body text-foreground antialiased">
+        <SiteStructuredData />
         <ConsentProvider>
           <Header />
           {children}
@@ -98,4 +101,9 @@ export default function RootLayout({
       </body>
     </html>
   );
+}
+
+async function SiteStructuredData() {
+  const siteConfig = await getSiteConfig();
+  return <StructuredData data={createSiteStructuredData(siteConfig)} />;
 }

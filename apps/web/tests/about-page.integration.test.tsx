@@ -52,21 +52,22 @@ describe("About page integration", () => {
     vi.stubEnv("CMS_URL", "https://cms.example.test");
     vi.stubGlobal(
       "fetch",
-      vi.fn<typeof fetch>().mockResolvedValue(
-        new Response(
-          JSON.stringify([
-            {
-              slug: "about",
-              title: { rendered: "About Tony" },
-              content: {
-                rendered:
-                  '<p>Model based in Madrid.</p><img src="x" onerror="alert(1)">',
+      vi.fn<typeof fetch>().mockImplementation(async (input) => {
+        const url = new URL(String(input));
+        const body = url.pathname.endsWith("/portfolio-studio/v1/settings")
+          ? { name: "Portfolio Studio" }
+          : [
+              {
+                slug: "about",
+                title: { rendered: "About Tony" },
+                content: {
+                  rendered:
+                    '<p>Model based in Madrid.</p><img src="x" onerror="alert(1)">',
+                },
               },
-            },
-          ]),
-          { status: 200, headers: { "Content-Type": "application/json" } },
-        ),
-      ),
+            ];
+        return Response.json(body);
+      }),
     );
 
     const markup = renderToStaticMarkup(await AboutPage());
@@ -80,16 +81,66 @@ describe("About page integration", () => {
     expect(markup).not.toContain("Coming soon.");
   });
 
+  it("renders ProfilePage JSON-LD connected to the configured Person", async () => {
+    vi.stubEnv("CMS_URL", "https://cms.example.test");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://portfolio.example.test");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn<typeof fetch>().mockImplementation(async (input) => {
+        const url = new URL(String(input));
+        const body = url.pathname.endsWith("/portfolio-studio/v1/settings")
+          ? {
+              name: "Portfolio Studio",
+              description: "A creative portfolio.",
+              seo: {
+                home: {},
+                defaultImage: null,
+                person: {
+                  name: "Example Model",
+                  description: "Approved bio.",
+                  occupation: "Model",
+                  image: null,
+                  sameAs: ["https://instagram.com/example"],
+                },
+              },
+            }
+          : [
+              {
+                slug: "about",
+                title: { rendered: "About Example Model" },
+                content: { rendered: "<p>About copy.</p>" },
+                seo: {},
+              },
+            ];
+        return Response.json(body);
+      }),
+    );
+
+    const markup = renderToStaticMarkup(await AboutPage());
+    const scripts = Array.from(
+      markup.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g),
+      (match) => JSON.parse(match[1]),
+    );
+    const profile = scripts.find((data) => data["@type"] === "ProfilePage");
+
+    expect(profile).toMatchObject({
+      url: "https://portfolio.example.test/about",
+      mainEntity: { "@id": "https://portfolio.example.test/#person" },
+    });
+  });
+
   it("falls back to the localized title when WordPress has no About page", async () => {
     vi.stubEnv("CMS_URL", "https://cms.example.test");
     vi.stubGlobal(
       "fetch",
-      vi.fn<typeof fetch>().mockResolvedValue(
-        new Response("[]", {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        }),
-      ),
+      vi.fn<typeof fetch>().mockImplementation(async (input) => {
+        const url = new URL(String(input));
+        return Response.json(
+          url.pathname.endsWith("/portfolio-studio/v1/settings")
+            ? { name: "Portfolio Studio" }
+            : [],
+        );
+      }),
     );
 
     const markup = renderToStaticMarkup(await AboutPage());

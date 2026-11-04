@@ -20,9 +20,18 @@ export interface SeoOverrides {
   image: SeoImage | null;
 }
 
+export interface SeoPerson {
+  name: string;
+  description: string;
+  occupation: string;
+  image: SeoImage | null;
+  sameAs: string[];
+}
+
 export interface SiteSeoSettings {
   home: SeoOverrides;
   defaultImage: SeoImage | null;
+  person: SeoPerson | null;
 }
 
 export interface SiteConfig {
@@ -74,6 +83,7 @@ const previewSiteConfig: SiteConfig = {
   seo: {
     home: { title: "", description: "", image: null },
     defaultImage: null,
+    person: null,
   },
   socialLinks: [],
   socialUrls: {
@@ -173,6 +183,38 @@ function normalizeSeoOverrides(value: unknown): SeoOverrides {
   };
 }
 
+function normalizeSeoPerson(value: unknown): SeoPerson | null {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return null;
+  }
+  const fields = value as Record<string, unknown>;
+  const name = typeof fields.name === "string" ? fields.name.trim().slice(0, 200) : "";
+  if (!name) return null;
+
+  const sameAs = Array.isArray(fields.sameAs)
+    ? fields.sameAs.flatMap((item) => {
+        const href = validExternalUrl(item);
+        if (!href) return [];
+        const url = new URL(href);
+        return url.username || url.password ? [] : [href];
+      })
+    : [];
+
+  return {
+    name,
+    description:
+      typeof fields.description === "string"
+        ? fields.description.trim().slice(0, 500)
+        : "",
+    occupation:
+      typeof fields.occupation === "string"
+        ? fields.occupation.trim().slice(0, 120)
+        : "",
+    image: normalizeSeoImage(fields.image),
+    sameAs: Array.from(new Set(sameAs)),
+  };
+}
+
 function normalizeSiteSeo(value: unknown): SiteSeoSettings {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
     return previewSiteConfig.seo;
@@ -181,6 +223,7 @@ function normalizeSiteSeo(value: unknown): SiteSeoSettings {
   return {
     home: normalizeSeoOverrides(fields.home),
     defaultImage: normalizeSeoImage(fields.defaultImage),
+    person: normalizeSeoPerson(fields.person),
   };
 }
 

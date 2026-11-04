@@ -15,8 +15,10 @@ describe("Portfolio page integration", () => {
       .fn<typeof fetch>()
       .mockImplementation(async (input) => {
         const url = new URL(String(input));
-        const body = url.pathname.endsWith("/wp/v2/pages")
-          ? [
+        const body = url.pathname.endsWith("/portfolio-studio/v1/settings")
+          ? { name: "Portfolio Studio" }
+          : url.pathname.endsWith("/wp/v2/pages")
+            ? [
               {
                 slug: "portfolio",
                 title: { rendered: "My selected work" },
@@ -25,8 +27,8 @@ describe("Portfolio page integration", () => {
                     '<p class="eyebrow">Fashion &amp; campaign work</p><p>Explore the portfolio.</p>',
                 },
               },
-            ]
-          : {
+              ]
+            : {
               items: [
                 {
                   id: 10,
@@ -95,10 +97,12 @@ describe("Portfolio page integration", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn<typeof fetch>().mockImplementation(async (input) => {
-        const isPage = String(input).includes("/wp/v2/pages");
-        return new Response(isPage ? "[]" : "offline", {
-          status: isPage ? 200 : 503,
-        });
+        const url = new URL(String(input));
+        if (url.pathname.endsWith("/portfolio-studio/v1/settings")) {
+          return Response.json({ name: "Portfolio Studio" });
+        }
+        const isPage = url.pathname.endsWith("/wp/v2/pages");
+        return new Response(isPage ? "[]" : "offline", { status: isPage ? 200 : 503 });
       }),
     );
 

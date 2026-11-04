@@ -159,5 +159,6 @@ nonce enforcement, editing controls, cache queues, and authenticated event paylo
 Run `node --check assets/seo-admin.js` for picker syntax and
 `node --test tests/seo-admin.test.cjs` for picker selection/removal behavior,
 from this plugin directory. The frontend JSON-LD implementation remains a
-separate follow-up; this endpoint provides validated Person data but does not
-emit structured data itself.
+separate frontend responsibility: it consumes the validated Person response and
+emits the Schema.org `Person`, `WebSite`, and page JSON-LD in server-rendered HTML.
+This endpoint itself does not emit structured data.

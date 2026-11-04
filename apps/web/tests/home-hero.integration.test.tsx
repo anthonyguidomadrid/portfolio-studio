@@ -58,6 +58,7 @@ const siteConfig: SiteConfig = {
   seo: {
     home: { title: "", description: "", image: null },
     defaultImage: null,
+    person: null,
   },
   socialLinks: [],
   socialUrls: {
