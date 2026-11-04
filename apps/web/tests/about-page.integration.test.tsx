@@ -59,10 +59,10 @@ describe("About page integration", () => {
           : [
               {
                 slug: "about",
-                title: { rendered: "About Tony" },
+                title: { rendered: "About Alex Morgan" },
                 content: {
                   rendered:
-                    '<p>Model based in Madrid.</p><img src="x" onerror="alert(1)">',
+                    '<p>Photographer based in Madrid.</p><img src="x" onerror="alert(1)">',
                 },
               },
             ];
@@ -72,8 +72,8 @@ describe("About page integration", () => {
 
     const markup = renderToStaticMarkup(await AboutPage());
 
-    expect(markup).toContain('aria-label="About Tony"');
-    expect(markup).toContain("Model based in Madrid.");
+    expect(markup).toContain('aria-label="About Alex Morgan"');
+    expect(markup).toContain("Photographer based in Madrid.");
     expect(markup).toContain("Have a project in mind?");
     expect(markup).toContain('href="/contact"');
     expect(markup).toContain("Contact for booking");
@@ -96,9 +96,9 @@ describe("About page integration", () => {
                 home: {},
                 defaultImage: null,
                 person: {
-                  name: "Example Model",
+                  name: "Alex Morgan",
                   description: "Approved bio.",
-                  occupation: "Model",
+                  occupation: "Photographer",
                   image: null,
                   sameAs: ["https://instagram.com/example"],
                 },
@@ -107,7 +107,7 @@ describe("About page integration", () => {
           : [
               {
                 slug: "about",
-                title: { rendered: "About Example Model" },
+                title: { rendered: "About Alex Morgan" },
                 content: { rendered: "<p>About copy.</p>" },
                 seo: {},
               },

@@ -80,49 +80,49 @@ class Portfolio_Studio_SEO_Test extends WP_UnitTestCase {
 		$this->assertNull(portfolio_studio_public_person(array()));
 		$image_id = $this->image();
 		update_option('portfolio_studio_site_settings', array(
-			'instagram_url' => 'https://instagram.com/model',
-			'facebook_url' => 'https://facebook.com/model',
+			'instagram_url' => 'https://instagram.example.test/alexmorgan',
+			'facebook_url' => 'https://facebook.example.test/alexmorgan',
 			'twitter_url' => 'javascript:alert(1)',
-			'youtube_url' => 'https://youtube.com/@model',
+			'youtube_url' => 'https://youtube.example.test/@alexmorgan',
 			'pinterest_url' => '',
-			'tumblr_url' => 'https://tumblr.com/model',
-			'flickr_url' => 'https://flickr.com/photos/model',
+			'tumblr_url' => 'https://tumblr.example.test/alexmorgan',
+			'flickr_url' => 'https://flickr.example.test/alexmorgan',
 		));
 		$person = portfolio_studio_public_person(array(
-			'name' => '  Example Model  ',
+			'name' => '  Alex Morgan  ',
 			'description' => '<b>Approved biography</b>',
-			'occupation' => '  Fashion Model  ',
+			'occupation' => '  Photographer  ',
 			'image_id' => $image_id,
 			'image_alt' => '',
 		));
 		$this->assertSame(array(
-			'name' => 'Example Model',
+			'name' => 'Alex Morgan',
 			'description' => 'Approved biography',
-			'occupation' => 'Fashion Model',
+			'occupation' => 'Photographer',
 			'image' => array('id' => $image_id, 'url' => wp_get_attachment_image_src($image_id, 'full')[0], 'width' => 1200, 'height' => 630, 'alt' => 'Media image description'),
-			'sameAs' => array('https://instagram.com/model', 'https://facebook.com/model', 'https://youtube.com/@model', 'https://tumblr.com/model', 'https://flickr.com/photos/model'),
+			'sameAs' => array('https://instagram.example.test/alexmorgan', 'https://facebook.example.test/alexmorgan', 'https://youtube.example.test/@alexmorgan', 'https://tumblr.example.test/alexmorgan', 'https://flickr.example.test/alexmorgan'),
 		), $person);
-		$this->assertNull(portfolio_studio_public_person(array('name' => '<b> </b>', 'occupation' => 'Model')));
+		$this->assertNull(portfolio_studio_public_person(array('name' => '<b> </b>', 'occupation' => 'Photographer')));
 	}
 
 	public function test_public_settings_route_exposes_person_and_existing_social_urls() {
 		$image_id = $this->image();
-		update_option('portfolio_studio_site_settings', array('instagram_url' => 'https://instagram.com/model'));
+		update_option('portfolio_studio_site_settings', array('instagram_url' => 'https://instagram.example.test/alexmorgan'));
 		update_option('portfolio_studio_seo_settings', array('person' => array(
-			'name' => 'Example Model',
+			'name' => 'Alex Morgan',
 			'description' => 'Approved biography.',
-			'occupation' => 'Model',
+			'occupation' => 'Photographer',
 			'image_id' => $image_id,
 		)));
 		wp_set_current_user(0);
 		$response = rest_get_server()->dispatch(new WP_REST_Request('GET', '/portfolio-studio/v1/settings'));
 		$this->assertSame(200, $response->get_status());
 		$this->assertSame(array(
-			'name' => 'Example Model',
+			'name' => 'Alex Morgan',
 			'description' => 'Approved biography.',
-			'occupation' => 'Model',
+			'occupation' => 'Photographer',
 			'image' => array('id' => $image_id, 'url' => wp_get_attachment_image_src($image_id, 'full')[0], 'width' => 1200, 'height' => 630, 'alt' => 'Media image description'),
-			'sameAs' => array('https://instagram.com/model'),
+			'sameAs' => array('https://instagram.example.test/alexmorgan'),
 		), $response->get_data()['seo']['person']);
 	}
 

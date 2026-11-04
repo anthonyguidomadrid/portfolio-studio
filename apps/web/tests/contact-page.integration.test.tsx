@@ -25,7 +25,7 @@ describe("Contact page integration", () => {
                 title: { rendered: "Let's work together" },
                 content: {
                   rendered:
-                    '<p>Send a booking enquiry.</p><ul class="wp-block-social-links is-layout-flex wp-block-social-links-is-layout-flex"><li class="wp-social-link wp-social-link-instagram wp-block-social-link"><a href="https://www.instagram.com/tonymickofficial/" class="wp-block-social-link-anchor"><svg aria-hidden="true"><path d="example"></path></svg><span class="screen-reader-text">Instagram</span></a></li><li class="wp-social-link wp-social-link-youtube wp-block-social-link"><a href="https://www.youtube.com/@TonyMikeOfficial" class="wp-block-social-link-anchor"><svg aria-hidden="true"><path d="example"></path></svg><span class="screen-reader-text">YouTube</span></a></li></ul>',
+                    '<p>Send a booking enquiry.</p><ul class="wp-block-social-links is-layout-flex wp-block-social-links-is-layout-flex"><li class="wp-social-link wp-social-link-instagram wp-block-social-link"><a href="https://www.instagram.com/alexmorgan/" class="wp-block-social-link-anchor"><svg aria-hidden="true"><path d="example"></path></svg><span class="screen-reader-text">Instagram</span></a></li><li class="wp-social-link wp-social-link-youtube wp-block-social-link"><a href="https://www.youtube.com/@alexmorgan" class="wp-block-social-link-anchor"><svg aria-hidden="true"><path d="example"></path></svg><span class="screen-reader-text">YouTube</span></a></li></ul>',
                 },
               },
             ];
@@ -43,12 +43,8 @@ describe("Contact page integration", () => {
     expect(markup).not.toContain("wp-block-social-links");
     expect(markup).not.toContain(">Instagram</a>");
     expect(markup).not.toContain(">YouTube</a>");
-    expect(markup).toContain(
-      'href="https://www.instagram.com/tonymickofficial/"',
-    );
-    expect(markup).toContain(
-      'href="https://www.youtube.com/@TonyMikeOfficial"',
-    );
+    expect(markup).toContain('href="https://www.instagram.com/alexmorgan/"');
+    expect(markup).toContain('href="https://www.youtube.com/@alexmorgan"');
     expect(markup).toContain('aria-label="Social media"');
     expect(markup).toContain('aria-label="Instagram"');
     expect(markup).toContain('aria-label="YouTube"');

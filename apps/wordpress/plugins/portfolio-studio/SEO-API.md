@@ -19,7 +19,7 @@ JSON-LD output, and the decision to index each public route.
   alternative text. Person data is published only when a nonempty name is set.
   The `sameAs` list reuses the existing social profile URLs from **Settings >
   Portfolio site**; there are no duplicate profile URL inputs. Occupation is
-  entered explicitly and is not assumed to be Model.
+  entered explicitly and is not assumed to be Photographer.
 - Use the WordPress Media Library picker to select or remove images. Save the
   page/settings afterward. A 1200 by 630 image is recommended, not enforced.
 - Empty strings mean no override. Image alt falls back to Media Library
@@ -46,9 +46,9 @@ When a Person name is configured, `seo.person` is:
 
 ```json
 {
-  "name": "Example Model",
+  "name": "Alex Morgan",
   "description": "An approved professional biography.",
-  "occupation": "Fashion Model",
+  "occupation": "Photographer",
   "image": {
     "id": 123,
     "url": "https://cms.example.com/wp-content/uploads/2026/11/portrait.jpg",

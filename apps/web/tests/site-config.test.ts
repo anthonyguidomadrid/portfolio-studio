@@ -171,9 +171,9 @@ describe("getSiteConfig", () => {
           name: "Studio",
           seo: {
             person: {
-              name: "  Example Model ",
+              name: "  Alex Morgan ",
               description: " Approved bio ",
-              occupation: " Model ",
+              occupation: " Photographer ",
               image: {
                 id: 7,
                 url: "https://cms.example.test/wp-content/uploads/portrait.jpg",
@@ -196,9 +196,9 @@ describe("getSiteConfig", () => {
     await expect(getSiteConfig()).resolves.toMatchObject({
       seo: {
         person: {
-          name: "Example Model",
+          name: "Alex Morgan",
           description: "Approved bio",
-          occupation: "Model",
+          occupation: "Photographer",
           image: expect.objectContaining({ alt: "Portrait" }),
           sameAs: ["https://instagram.com/example"],
         },

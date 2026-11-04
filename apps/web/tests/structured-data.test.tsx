@@ -20,15 +20,15 @@ const siteConfig = {
       alt: "Default sharing image",
     },
     person: {
-      name: "Example Model",
+      name: "Alex Morgan",
       description: "Approved professional biography.",
-      occupation: "Fashion Model",
+      occupation: "Photographer",
       image: {
         id: 9,
         url: "https://cms.example.test/wp-content/uploads/portrait.jpg",
         width: 1200,
         height: 1600,
-        alt: "Portrait of the model",
+        alt: "Portrait of the photographer",
       },
       sameAs: ["https://instagram.com/example"],
     },
@@ -55,10 +55,10 @@ describe("Schema.org structured data", () => {
       {
         "@type": "Person",
         "@id": "https://portfolio.example.test/#person",
-        name: "Example Model",
+        name: "Alex Morgan",
         url: "https://portfolio.example.test/",
         description: "Approved professional biography.",
-        jobTitle: "Fashion Model",
+        jobTitle: "Photographer",
         image: "https://cms.example.test/wp-content/uploads/portrait.jpg",
         sameAs: ["https://instagram.com/example"],
       },
@@ -83,8 +83,8 @@ describe("Schema.org structured data", () => {
       {
         canonical: "/about",
         pageType: "ProfilePage",
-        title: "About Example Model",
-        description: "A page about the model.",
+        title: "About Alex Morgan",
+        description: "A page about the photographer.",
         image: null,
       },
       siteConfig,
@@ -93,8 +93,8 @@ describe("Schema.org structured data", () => {
       "@type": "ProfilePage",
       "@id": "https://portfolio.example.test/about#webpage",
       url: "https://portfolio.example.test/about",
-      name: "About Example Model",
-      description: "A page about the model.",
+      name: "About Alex Morgan",
+      description: "A page about the photographer.",
       isPartOf: { "@id": "https://portfolio.example.test/#website" },
       mainEntity: { "@id": "https://portfolio.example.test/#person" },
       primaryImageOfPage: {
@@ -121,7 +121,7 @@ describe("Schema.org structured data", () => {
       <StructuredData
         data={{
           "@context": "https://schema.org",
-          name: "Model </script><script>alert(1)</script> & friends",
+          name: "Photographer </script><script>alert(1)</script> & friends",
           lineSeparator: "\u2028",
         }}
       />,
@@ -131,7 +131,7 @@ describe("Schema.org structured data", () => {
     expect(json).toBeDefined();
     expect(JSON.parse(json!)).toEqual({
       "@context": "https://schema.org",
-      name: "Model </script><script>alert(1)</script> & friends",
+      name: "Photographer </script><script>alert(1)</script> & friends",
       lineSeparator: "\u2028",
     });
   });

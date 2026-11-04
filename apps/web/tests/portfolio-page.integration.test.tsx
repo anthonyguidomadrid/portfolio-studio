@@ -40,7 +40,7 @@ describe("Portfolio page integration", () => {
                       url: "https://cms.example.test/wp-content/uploads/studio-portrait.jpg",
                       width: 800,
                       height: 1200,
-                      alt: "Model in the studio",
+                      alt: "Photographer in the studio",
                       caption: "Studio session",
                     },
                     tags: [{ id: 1, slug: "editorial", name: "Editorial" }],
@@ -68,7 +68,7 @@ describe("Portfolio page integration", () => {
     expect(markup).toContain("Explore the portfolio.");
     expect(markup).toContain("Studio Portrait");
     expect(markup).toContain("Editorial");
-    expect(markup).toContain("Model in the studio");
+    expect(markup).toContain("Photographer in the studio");
     expect(markup).toContain('aria-pressed="true"');
     expect(markup).not.toContain(">Portfolio</h1>");
     expect(markup).not.toContain("Coming soon.");

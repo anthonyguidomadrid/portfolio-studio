@@ -22,7 +22,7 @@ const photos: PortfolioPhoto[] = [
       url: "https://cms.example.test/wp-content/uploads/editorial-one.jpg",
       width: 800,
       height: 1200,
-      alt: "Model in a studio",
+      alt: "Photographer in a studio",
       caption: "First editorial",
     },
     tags: [tags[0]],
@@ -52,7 +52,7 @@ const photos: PortfolioPhoto[] = [
       url: "https://cms.example.test/wp-content/uploads/editorial-two.jpg",
       width: 800,
       height: 1200,
-      alt: "Model by a window",
+      alt: "Photographer by a window",
       caption: "Second editorial",
     },
     tags: [tags[0]],
@@ -175,7 +175,9 @@ describe("PortfolioGallery", () => {
     expect(dialog.hasAttribute("open")).toBe(true);
     expect(document.activeElement).toBe(dialog);
     expect(document.body.style.overflow).toBe("hidden");
-    expect(screen.getByRole("img", { name: "Model in a studio" })).toBeTruthy();
+    expect(
+      screen.getByRole("img", { name: "Photographer in a studio" }),
+    ).toBeTruthy();
     expect(dialog.className).toContain("p-2");
     expect(dialog.textContent).not.toContain("First editorial");
     expect(
@@ -187,7 +189,9 @@ describe("PortfolioGallery", () => {
     await user.keyboard("{ArrowRight}");
     expect(screen.getByRole("img", { name: "Product campaign" })).toBeTruthy();
     await user.keyboard("{ArrowLeft}");
-    expect(screen.getByRole("img", { name: "Model in a studio" })).toBeTruthy();
+    expect(
+      screen.getByRole("img", { name: "Photographer in a studio" }),
+    ).toBeTruthy();
     await user.keyboard("{Escape}");
 
     expect(dialog.hasAttribute("open")).toBe(false);
